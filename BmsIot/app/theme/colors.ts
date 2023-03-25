@@ -1,41 +1,88 @@
-// TODO: write documentation for colors and palette in own markdown file and add links from here
-
 const palette = {
-  neutral100: "#FFFFFF",
-  neutral200: "#F4F2F1",
-  neutral300: "#D7CEC9",
-  neutral400: "#B6ACA6",
-  neutral500: "#978F8A",
-  neutral600: "#564E4A",
-  neutral700: "#3C3836",
-  neutral800: "#191015",
-  neutral900: "#000000",
+  // original background colour
+  // neutral100: "#FFFFFF",
+  // neutral200: "#F4F2F1",
+  // neutral300: "#D7CEC9",
+  // neutral400: "#B6ACA6",
+  // neutral500: "#978F8A",
+  // neutral600: "#564E4A",
+  // neutral700: "#3C3836",
+  // neutral800: "#191015",
+  // neutral900: "#000000",
 
-  primary100: "#F4E0D9",
-  primary200: "#E8C1B4",
-  primary300: "#DDA28E",
-  primary400: "#D28468",
-  primary500: "#C76542",
-  primary600: "#A54F31",
+  //background -> 
+    neutral100: "#fffefe",
+    neutral200: "#fffdfd",
+    neutral300: "#fefbfc",
+    neutral400: "#fefafb",
+    neutral500: "#fef9fa",
+    neutral600: "#cbc7c8",
+    neutral700: "#989596",
+    neutral800: "#666464",
+    neutral900: "#333232",
 
-  secondary100: "#DCDDE9",
-  secondary200: "#BCC0D6",
-  secondary300: "#9196B9",
-  secondary400: "#626894",
-  secondary500: "#41476E",
+  // original primary
+  // primary100: "#F4E0D9",
+  // primary200: "#E8C1B4",
+  // primary300: "#DDA28E",
+  // primary400: "#D28468",
+  // primary500: "#C76542",
+  // primary600: "#A54F31",
 
-  accent100: "#FFEED4",
-  accent200: "#FFE1B2",
-  accent300: "#FDD495",
-  accent400: "#FBC878",
-  accent500: "#FFBB50",
+  //primary -> dark green
+    primary100: "#d0dad7",
+    primary200: "#a2b5af",
+    primary300: "#739188",
+    primary400: "#456c60",
+    primary500: "#164738",
+    primary600: "#12392d",
+    primary700: "#0d2b22",
+    primary800: "#091c16",
+    primary900: "#040e0b",
 
-  angry100: "#F2D6CD",
-  angry500: "#C03403",
+  //original secondary format
+  // secondary100: "#DCDDE9",
+  // secondary200: "#BCC0D6",
+  // secondary300: "#9196B9",
+  // secondary400: "#626894",
+  // secondary500: "#41476E",
+
+  //secondary colours -> light green
+  secondary100: "#e6f1db",
+  secondary200: "#cde2b8",
+  secondary300: "#b3d494",
+  secondary400: "#9ac571",
+  secondary500: "#81b74d",
+  secondary600: "#67923e",
+  secondary700: "#4d6e2e",
+  secondary800: "#34491f",
+  secondary900: "#1a250f",
+
+  //accent
+  // accent100: "#FFEED4",
+  // accent200: "#FFE1B2",
+  // accent300: "#FDD495",
+  // accent400: "#FBC878",
+  // accent500: "#FFBB50",
+
+  //accent colour -> teal
+  accent100: "#d8ebea",
+  accent200: "#b1d6d5",
+  accent300: "#89c2c1",
+  accent400: "#62adac",
+  accent500: "#3b9997",
+  accent600: "#2f7a79",
+  accent700: "#235c5b",
+  accent800: "#183d3c",
+  accent900: "#0c1f1e",
+
+  angry100: "#f2d2d6",
+  angry500:"#c02034",
 
   overlay20: "rgba(25, 16, 21, 0.2)",
   overlay50: "rgba(25, 16, 21, 0.5)",
 } as const
+
 
 export const colors = {
   /**
