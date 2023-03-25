@@ -46,6 +46,7 @@ const en = {
     debugTab: "Debug",
     communityTab: "Community",
     podcastListTab: "Podcast",
+    homePage: "Home"
   },
   demoCommunityScreen: {
     title: "Connect with the community",
@@ -119,6 +120,10 @@ const en = {
         "No favorites have been added yet. Tap the heart on an episode to add it to your favorites!",
     },
   },
+  nava: {
+      title: "Smart Irrigation Dashboard",
+      tagLine: "Nava's tag line",
+    }
   // @demo remove-block-end
 }
 

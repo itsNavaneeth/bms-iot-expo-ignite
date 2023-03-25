@@ -9,12 +9,14 @@ import { DemoCommunityScreen, DemoShowroomScreen, DemoDebugScreen } from "../scr
 import { DemoPodcastListScreen } from "../screens/DemoPodcastListScreen"
 import { colors, spacing, typography } from "../theme"
 import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
+import Homepage from "../screens/Homepage"
 
 export type DemoTabParamList = {
   DemoCommunity: undefined
   DemoShowroom: { queryIndex?: string; itemIndex?: string }
   DemoDebug: undefined
   DemoPodcastList: undefined
+  HomePage: undefined
 }
 
 /**
@@ -44,6 +46,18 @@ export function DemoNavigator() {
         tabBarItemStyle: $tabBarItem,
       }}
     >
+
+      <Tab.Screen
+        name="HomePage"
+        component={Homepage}
+        options={{
+          tabBarLabel: translate("demoNavigator.homePage"),
+          tabBarIcon: ({ focused }) => (
+            <Icon icon="home" color={focused && colors.tint} size={30} />
+          ),
+        }}
+      />
+
       <Tab.Screen
         name="DemoShowroom"
         component={DemoShowroomScreen}
@@ -87,6 +101,7 @@ export function DemoNavigator() {
           ),
         }}
       />
+      
     </Tab.Navigator>
   )
 }

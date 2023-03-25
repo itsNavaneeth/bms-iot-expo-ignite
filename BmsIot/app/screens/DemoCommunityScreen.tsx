@@ -15,8 +15,8 @@ export const DemoCommunityScreen: FC<DemoTabScreenProps<"DemoCommunity">> =
   function DemoCommunityScreen(_props) {
     return (
       <Screen preset="scroll" contentContainerStyle={$container} safeAreaEdges={["top"]}>
-        <Text preset="heading" tx="demoCommunityScreen.title" style={$title} />
-        <Text tx="demoCommunityScreen.tagLine" style={$tagline} />
+        <Text preset="heading" tx="nava.title" style={$title} />
+        <Text tx="nava.tagLine" style={$tagline} />
 
         <Text preset="subheading" tx="demoCommunityScreen.joinUsOnSlackTitle" />
         <Text tx="demoCommunityScreen.joinUsOnSlack" style={$description} />
