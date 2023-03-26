@@ -64,7 +64,7 @@ interface CardProps extends TouchableOpacityProps {
   /**
    * The content text to display if not using `contentTx`.
    */
-  content?: TextProps["text"]
+  content?: ReactElement
   /**
    * Content text which is looked up via i18n.
    */

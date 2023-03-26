@@ -46,14 +46,13 @@ export function DemoNavigator() {
         tabBarItemStyle: $tabBarItem,
       }}
     >
-
       <Tab.Screen
         name="HomePage"
         component={Homepage}
         options={{
           tabBarLabel: translate("demoNavigator.homePage"),
           tabBarIcon: ({ focused }) => (
-            <Icon icon="home" color={focused && colors.tint} size={30} />
+            <Icon icon="home" color={focused && colors.tint} size={40} />
           ),
         }}
       />
@@ -64,7 +63,7 @@ export function DemoNavigator() {
         options={{
           tabBarLabel: translate("demoNavigator.componentsTab"),
           tabBarIcon: ({ focused }) => (
-            <Icon icon="components" color={focused && colors.tint} size={30} />
+            <Icon icon="settings" color={focused && colors.tint} size={30} />
           ),
         }}
       />
@@ -101,7 +100,6 @@ export function DemoNavigator() {
           ),
         }}
       />
-      
     </Tab.Navigator>
   )
 }

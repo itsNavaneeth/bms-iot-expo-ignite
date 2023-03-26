@@ -1,5 +1,5 @@
 import React from "react"
-import axios, { AxiosRequestConfig } from "axios"
+import axios from "axios"
 import { useState, useEffect } from "react"
 import { ImageStyle, TextStyle, View, ViewStyle } from "react-native"
 import { Button, Screen, Text } from "../components"
@@ -16,120 +16,198 @@ import { colors } from "../theme"
 
 const ICON_SIZE = 14
 
-const optionsMoisture: AxiosRequestConfig = {
-  method: "GET",
-  url: "https://api.thingspeak.com/channels/2028980/fields/2.json",
-  params: { results: "1", api_key: "SO50RIFJSC1IIO7K" },
+interface Feed {
+  field2: string
 }
 
-const optionsValve: AxiosRequestConfig = {
-  method: "GET",
-  url: "https://api.thingspeak.com/channels/2028983/feeds.json",
-  params: { results: "1", api_key: "SO50RIFJSC1IIO7K" },
+interface ResponseData {
+  feeds: Feed[]
 }
 
 const Homepage: React.FC = () => {
-  // useStates
-  const [moistureLevel, setMoistureLevel] = useState(0.0)
-  const [moistureLevelMV, setMoistureLevelMV] = useState(0.0)
-  const [moistureLastUpdated, setMoistureLastUpdated] = useState("")
+  //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< State Change Variables >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  const [moisturePercentageColor, setMoisturePercentageColor] = useState("bg-neutral")
+  const [btnState, setBtnState] = useState("")
+  const [textState, setTextState] = useState("text-error")
+  const [wateringSystemMode, setWateringSystemMode] = useState("AUTOMATIC")
+  const [wateringStatus, setWateringStatus] = useState("OFF")
+  const [soilDetails, setSoilDetails] = useState(false)
+  const [waterDetails, setWaterDetails] = useState(false)
 
-  const [nextWater, setNextWater] = useState(0.0)
-  const [nextWaterLastUpdated, setNextWaterLastUpdated] = useState("")
-
+  //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Data Display Variables >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  const [currentMoisture, setCurrentMoisture] = useState(80.0)
   const [temperature, setTemperature] = useState(0.0)
-  const [rainfall, setRainfall] = useState(0.0)
   const [humidity, setHumidity] = useState(0.0)
-  const [openWeatherLastUpdated, setOpenWeatherLastUpdated] = useState("")
+  const [rainfall, setRainfall] = useState(0.0)
+  const [fieldValue, setFieldValue] = useState(null)
+  const [irrigationDuration, setIrrigationDuration] = useState(0.0)
+  const [irrigationQuantity, setIrrigationQuantity] = useState(0.0)
+  const [moisturePercentage, setMoisturePercentage] = useState(0.0)
+  const [tomPrediction, setTomPrediction] = useState(0.0)
+  const [sensor1Data, setSensor1Data] = useState(0.0)
+  const [sensor2Data, setSensor2Data] = useState(0.0)
+  const [sensor3Data, setSensor3Data] = useState(0.0)
+  const [flowData, setFlowData] = useState(0)
+  const [totalWaterUsed, setTotalWaterUsed] = useState(0)
+  const [realTimeFlowRate, setRealTimeFlowRate] = useState(0)
+  const [valvePosition, setValvePosition] = useState("off")
+  const [averagePercentage, setAveragePercentage] = useState(0)
 
-  const [valveLastUpdated, setValveLastUpdated] = useState("")
-  const [realTimeFlowRate, setRealTimeFlowRate] = useState(0.0)
-  const [totalWaterUsed, setTotalWaterUsed] = useState(0.0)
-  const [valvePosition, setValvePosition] = useState("")
+  // nava code temp
+  const [sensor1mV, setSensor1mV] = useState(0)
+  const [lastUpdated, setLastUpdated] = useState("")
 
-  // all axios statements
-  // axios for moisture level
-  const fetchMoisture = async () => {
-    axios
-      .request(optionsMoisture)
-      .then(function (response) {
-        setMoistureLastUpdated(convertUTCToIST(response.data.feeds[0].created_at))
-        setMoistureLevelMV(response.data.feeds[0].field2)
-        setMoistureLevel(convertMVtoPercentage(response.data.feeds[0].field2))
-      })
-      .catch(function (error) {
-        console.error(error)
-      })
-  }
+  // ---------------------------------------------------------------------Valve Related---------------------------------------------------------------------------------------
 
-  // axios for real time flow rate, total water used, valve position
-  const fetchValveInfo = async () => {
-    axios
-      .request(optionsValve)
-      .then(function (response) {
-        let water = response.data.feeds[0].field2
-        let new_water = Number(water).toFixed(2)
+  // ----------------Toggle between MANUAL and AUTOMATIC Mode----------------------
+  useEffect(() => {
+    let temp
+    if (wateringSystemMode === "AUTOMATIC") {
+      setBtnState("disabled")
+    } else {
+      setBtnState("")
+    }
+  }, [wateringSystemMode])
 
-        let valve_pos = response.data.feeds[0].field1
-        let new_valve_pos
-        new_valve_pos = valve_pos == 1 ? "Closed" : "Open"
+  // ---------------------------------------------------------------------Field Data Display---------------------------------------------------------------------------------------
 
-        setValveLastUpdated(convertUTCToIST(response.data.feeds[0].created_at))
-        setValvePosition(new_valve_pos)
-        setTotalWaterUsed(Number(new_water))
-        setRealTimeFlowRate(response.data.feeds[0].field3)
-      })
-      .catch(function (error) {
-        console.error(error)
-      })
-  }
+  // ----------------Convert Moisture to Percentage TODO:Change to be triggered by average moisture instead ----------------------
+  useEffect(() => {
+    let percentage = 0.0
+    let empty = 0
+    let full = 100
+    let min_moisture = 800
+    let max_moisture = 2800
 
-  // axios for next water requirement
+    percentage =
+      full -
+      ((full - empty) * (currentMoisture - min_moisture)) / (max_moisture - min_moisture) +
+      empty
+    // percentage = 80;
+    if (percentage > 100) {
+      percentage = 100
+    }
+    if (percentage < 0) {
+      percentage = 0
+    }
+    percentage = Number(percentage.toFixed(2))
+    setMoisturePercentage(percentage)
 
-  // axios for temperature, humidity and rainfall (useEffect 2 sec)
+    if (percentage < 30) {
+      setMoisturePercentageColor("error")
+    } else if (percentage < 60) {
+      setMoisturePercentageColor("warning")
+    } else {
+      setMoisturePercentageColor("success")
+    }
+  }, [currentMoisture])
 
-  // use effect 2 sec
+  // ---------------- Data Fetch from Thingspeak ----------------------
   useEffect(() => {
     const interval = setInterval(() => {
-      fetchMoisture()
-      fetchValveInfo()
+      //--------------Automatic mode data TODO:Change to be triggered by average moisture instead--------------
+
+      //--------------Sensor 1--------------
+      fetch("https://api.thingspeak.com/channels/2028980/feeds.json?results=2")
+        .then((response) => response.json())
+        .then((data) => {
+          let temp = map_range(data.feeds[0].field2)
+          // console.log(data.feeds[0].field2)
+          setSensor1mV(data.feeds[0].field2)
+          // let temp = map_range(3000);
+
+          setSensor1Data(Number(temp))
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+
+      // console.log(data.feeds[0].created_at)
+
+      //axios get request template
     }, 2000)
 
     return () => clearInterval(interval)
   }, [])
 
-  // use effect on page refresh for openweathermap
+  // ---------------- Calculate Average Moisture ----------------------
+  useEffect(() => {
+    let x = (sensor1Data + sensor2Data + sensor3Data) / 3
+    x = Number(x.toFixed(2))
+    setAveragePercentage(x)
+  }, [sensor1Data, sensor2Data, sensor3Data])
 
-  // all functions
-  // function to convert mV to percentage
-  const convertMVtoPercentage = (mV: number): number => {
+  // ---------------- Calculate Irrigation Duration and Irrigation Quantity TODO:Modify to use average moisture ----------------------
+  useEffect(() => {
+    let duration = 0.0
+    let drip_ltr = 40
+    let ltr = 0.0
+    duration = (70 - moisturePercentage) * 3
+    if (duration < 0) {
+      duration = 0
+    }
+    duration = Number(duration.toFixed(0))
+    setIrrigationDuration(duration)
+
+    ltr = (duration * 20) / 7.5
+    ltr = Number(ltr.toFixed(2))
+    setIrrigationQuantity(ltr)
+  }, [moisturePercentage])
+
+  // ---------------- Field Value? TODO:Modify to use average moisture ----------------------
+  useEffect(() => {
+    async function fetchData() {
+      const response = await fetch(
+        "https://api.thingspeak.com/channels/1978647/fields/3.json?results=1",
+      )
+      const data = await response.json()
+      setFieldValue(data.feeds[0].field3)
+
+      let temp = (fieldValue * 100) / 0.72
+      let percentage = 0.0
+      let empty = 0
+      let full = 100
+      let min_moisture = 800
+      let max_moisture = 2800
+
+      percentage =
+        full - ((full - empty) * (temp - min_moisture)) / (max_moisture - min_moisture) + empty
+
+      let duration = (70 - percentage) * 3
+      if (duration < 0) {
+        duration = 0
+      }
+      duration = Number(duration.toFixed(0))
+      let ltr = (duration * 20) / 7.5
+      ltr = Number(ltr.toFixed(2))
+      setTomPrediction(ltr)
+    }
+    fetchData()
+  }, [fieldValue])
+
+  // ---------------- Convert Moisture Voltage to Percentages ----------------------
+  const convertToPercentage = (data) => {
+    let temp = data
+    let percentage = 0.0
+    let empty = 0
+    let full = 100
+    let min_moisture = 1100
+    let max_moisture = 4000
+    percentage =
+      full - ((full - empty) * (temp - min_moisture)) / (max_moisture - min_moisture) + empty
+    let new_percentage = percentage.toFixed(2)
+
+    // return Math.round(new_percentage);
+    return new_percentage
+  }
+
+  const map_range = (data) => {
     let in_min = 3200
     let in_max = 1300
     let out_min = 0
     let out_max = 100
-    let percentage = ((mV - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min
-    return Number(percentage.toFixed(2))
-  }
-
-  // function to convert UTC to IST
-  const convertUTCToIST = (utcDate: string): string => {
-    const date = new Date(utcDate)
-    const istDate = new Date(date.getTime())
-
-    const year = istDate.getFullYear()
-    const month = formatDoubleDigit(istDate.getMonth() + 1) // Add 1 to account for zero-based indexing
-    const day = formatDoubleDigit(istDate.getDate())
-    const hours = formatDoubleDigit(istDate.getHours())
-    const minutes = formatDoubleDigit(istDate.getMinutes())
-    const seconds = formatDoubleDigit(istDate.getSeconds())
-
-    const istTime = `${hours}:${minutes}:${seconds} | ${day}/${month}/${year}`
-
-    return istTime
-  }
-  // helper function for double digit date parsing
-  const formatDoubleDigit = (value: number) => {
-    return value < 10 ? `0${value}` : value.toString()
+    let new_percentage = ((data - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min
+    return new_percentage.toFixed(2)
   }
 
   return (
@@ -140,7 +218,7 @@ const Homepage: React.FC = () => {
           <View style={$myleft}>
             <View style={$lefttop}>
               <Text style={$metadataText} size="xxs" weight="semiBold">
-                {moistureLastUpdated}
+                13:05 26th March
               </Text>
             </View>
             <View style={$leftbottom}>
@@ -153,93 +231,12 @@ const Homepage: React.FC = () => {
           <View style={$myright}>
             <View style={$righttop}>
               <Text style={$metadataText} size="xxs" weight="semiBold">
-                {moistureLevelMV} mV
+                2050mV
               </Text>
             </View>
             <View style={$rightbottom}>
               <Text style={$righttext} size="xxl" weight="bold">
-                {moistureLevel} %
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        {/* card 5 - Real Time Flow Rate */}
-        <View style={$mycard}>
-          <View style={$myleft}>
-            <View style={$lefttop}>
-              <Text style={$metadataText} size="xxs" weight="semiBold">
-                {valveLastUpdated}
-              </Text>
-            </View>
-            <View style={$leftbottom}>
-              <Text size="lg" weight="bold">
-                Real Time Flow Rate (L/min)
-              </Text>
-            </View>
-          </View>
-
-          <View style={$myright}>
-            <View style={$righttop}>
-              <Text style={$metadataText} size="xxs" weight="semiBold"></Text>
-            </View>
-            <View style={$rightbottom}>
-              <Text style={$righttext} size="xxl" weight="bold">
-                {realTimeFlowRate}
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        {/* card 6 - Total Water Used */}
-        <View style={$mycard}>
-          <View style={$myleft}>
-            <View style={$lefttop}>
-              <Text style={$metadataText} size="xxs" weight="semiBold">
-                {valveLastUpdated}
-              </Text>
-            </View>
-            <View style={$leftbottom}>
-              <Text size="lg" weight="bold">
-                Total Water Used (Ltr)
-              </Text>
-            </View>
-          </View>
-
-          <View style={$myright}>
-            <View style={$righttop}>
-              <Text style={$metadataText} size="xxs" weight="semiBold"></Text>
-            </View>
-            <View style={$rightbottom}>
-              <Text style={$righttext} size="xxl" weight="bold">
-                {totalWaterUsed}
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        {/* card 7 - Valve Position */}
-        <View style={$mycard}>
-          <View style={$myleft}>
-            <View style={$lefttop}>
-              <Text style={$metadataText} size="xxs" weight="semiBold">
-                {valveLastUpdated}
-              </Text>
-            </View>
-            <View style={$leftbottom}>
-              <Text size="lg" weight="bold">
-                Valve Position
-              </Text>
-            </View>
-          </View>
-
-          <View style={$myright}>
-            <View style={$righttop}>
-              <Text style={$metadataText} size="xxs" weight="semiBold"></Text>
-            </View>
-            <View style={$rightbottom}>
-              <Text style={$righttext} size="xxl" weight="bold">
-                {valvePosition}
+                40.5%
               </Text>
             </View>
           </View>
@@ -250,7 +247,7 @@ const Homepage: React.FC = () => {
           <View style={$myleft}>
             <View style={$lefttop}>
               <Text style={$metadataText} size="xxs" weight="semiBold">
-                To be done
+                13:05 26th March
               </Text>
             </View>
             <View style={$leftbottom}>
@@ -262,11 +259,13 @@ const Homepage: React.FC = () => {
 
           <View style={$myright}>
             <View style={$righttop}>
-              <Text style={$metadataText} size="xxs" weight="semiBold"></Text>
+              <Text style={$metadataText} size="xxs" weight="semiBold">
+                2050mV
+              </Text>
             </View>
             <View style={$rightbottom}>
               <Text style={$righttext} size="xxl" weight="bold">
-                000
+                40.5%
               </Text>
             </View>
           </View>
@@ -277,7 +276,7 @@ const Homepage: React.FC = () => {
           <View style={$myleft}>
             <View style={$lefttop}>
               <Text style={$metadataText} size="xxs" weight="semiBold">
-                To be done
+                13:05 26th March
               </Text>
             </View>
             <View style={$leftbottom}>
@@ -289,11 +288,13 @@ const Homepage: React.FC = () => {
 
           <View style={$myright}>
             <View style={$righttop}>
-              <Text style={$metadataText} size="xxs" weight="semiBold"></Text>
+              <Text style={$metadataText} size="xxs" weight="semiBold">
+                2050mV
+              </Text>
             </View>
             <View style={$rightbottom}>
               <Text style={$righttext} size="xxl" weight="bold">
-                000
+                40.5%
               </Text>
             </View>
           </View>
@@ -304,7 +305,7 @@ const Homepage: React.FC = () => {
           <View style={$myleft}>
             <View style={$lefttop}>
               <Text style={$metadataText} size="xxs" weight="semiBold">
-                To be done
+                13:05 26th March
               </Text>
             </View>
             <View style={$leftbottom}>
@@ -316,11 +317,13 @@ const Homepage: React.FC = () => {
 
           <View style={$myright}>
             <View style={$righttop}>
-              <Text style={$metadataText} size="xxs" weight="semiBold"></Text>
+              <Text style={$metadataText} size="xxs" weight="semiBold">
+                2050mV
+              </Text>
             </View>
             <View style={$rightbottom}>
               <Text style={$righttext} size="xxl" weight="bold">
-                000
+                40.5%
               </Text>
             </View>
           </View>
@@ -331,7 +334,7 @@ const Homepage: React.FC = () => {
           <View style={$myleft}>
             <View style={$lefttop}>
               <Text style={$metadataText} size="xxs" weight="semiBold">
-                To be done
+                13:05 26th March
               </Text>
             </View>
             <View style={$leftbottom}>
@@ -343,11 +346,100 @@ const Homepage: React.FC = () => {
 
           <View style={$myright}>
             <View style={$righttop}>
-              <Text style={$metadataText} size="xxs" weight="semiBold"></Text>
+              <Text style={$metadataText} size="xxs" weight="semiBold">
+                2050mV
+              </Text>
             </View>
             <View style={$rightbottom}>
               <Text style={$righttext} size="xxl" weight="bold">
-                000
+                40.5%
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* card 5 - Real Time Flow Rate */}
+        <View style={$mycard}>
+          <View style={$myleft}>
+            <View style={$lefttop}>
+              <Text style={$metadataText} size="xxs" weight="semiBold">
+                13:05 26th March
+              </Text>
+            </View>
+            <View style={$leftbottom}>
+              <Text size="lg" weight="bold">
+                Real Time Flow Rate
+              </Text>
+            </View>
+          </View>
+
+          <View style={$myright}>
+            <View style={$righttop}>
+              <Text style={$metadataText} size="xxs" weight="semiBold">
+                2050mV
+              </Text>
+            </View>
+            <View style={$rightbottom}>
+              <Text style={$righttext} size="xxl" weight="bold">
+                40.5%
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* card 6 - Total Water Used */}
+        <View style={$mycard}>
+          <View style={$myleft}>
+            <View style={$lefttop}>
+              <Text style={$metadataText} size="xxs" weight="semiBold">
+                13:05 26th March
+              </Text>
+            </View>
+            <View style={$leftbottom}>
+              <Text size="lg" weight="bold">
+                Total Water Used
+              </Text>
+            </View>
+          </View>
+
+          <View style={$myright}>
+            <View style={$righttop}>
+              <Text style={$metadataText} size="xxs" weight="semiBold">
+                2050mV
+              </Text>
+            </View>
+            <View style={$rightbottom}>
+              <Text style={$righttext} size="xxl" weight="bold">
+                40.5%
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* card 7 - Valve Position */}
+        <View style={$mycard}>
+          <View style={$myleft}>
+            <View style={$lefttop}>
+              <Text style={$metadataText} size="xxs" weight="semiBold">
+                13:05 26th March
+              </Text>
+            </View>
+            <View style={$leftbottom}>
+              <Text size="lg" weight="bold">
+                Valve Position
+              </Text>
+            </View>
+          </View>
+
+          <View style={$myright}>
+            <View style={$righttop}>
+              <Text style={$metadataText} size="xxs" weight="semiBold">
+                2050mV
+              </Text>
+            </View>
+            <View style={$rightbottom}>
+              <Text style={$righttext} size="xxl" weight="bold">
+                40.5%
               </Text>
             </View>
           </View>
@@ -565,3 +657,44 @@ const $emptyStateImage: ImageStyle = {
 // @demo remove-file
 
 export default Homepage
+
+//
+{
+  /* <>
+      <Screen preset="scroll" contentContainerStyle={$container} safeAreaEdges={["top"]}>
+        <StyledView className="flex-1 items-center justify-center my-2">
+          <StyledView className="block w-full p-6 bg-white border border-gray-200 rounded-lg shadow">
+            <StyledText className="font-normal text-gray-700 dark:text-gray-400">
+              {`Last updated at: ${lastUpdated}`}
+            </StyledText>
+            <StyledText className="mb-2 text-lg font-bold tracking-tight text-gray-900">
+              {`Sensor Reading: ${sensor1Data} % (${sensor1mV} mV)`}
+            </StyledText>
+          </StyledView>
+        </StyledView>
+
+        <StyledView className="flex-1 items-center justify-center my-2">
+          <StyledView className="block w-full p-6 bg-white border border-gray-200 rounded-lg shadow">
+            <StyledText className="font-normal text-gray-700 dark:text-gray-400">
+              {`Last updated at: ${lastUpdated}`}
+            </StyledText>
+            <StyledText className="mb-2 text-xl font-bold tracking-tight text-gray-900">
+              {`Sensor Reading: ${sensor1Data} % (${sensor1mV} mV)`}
+            </StyledText>
+          </StyledView>
+        </StyledView>
+
+        <StyledView className="flex-1 items-center justify-center my-2">
+          <StyledView className="block w-full p-6 bg-white border border-gray-200 rounded-lg shadow">
+            <StyledText className="font-normal text-gray-700 dark:text-gray-400">
+              {`Last updated at: ${lastUpdated}`}
+            </StyledText>
+            <StyledText className="mb-2 text-xl font-bold tracking-tight text-gray-900">
+              {`Sensor Reading: ${sensor1Data} % (${sensor1mV} mV)`}
+            </StyledText>
+          </StyledView>
+        </StyledView>
+      </Screen>
+    </>
+//  */
+}

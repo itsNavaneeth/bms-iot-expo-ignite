@@ -7,11 +7,11 @@
     "scheme": "bmsiot",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/app-icon-all.png",
+    "icon": "./assets/images/water-plant-icon.png",
     "splash": {
-      "image": "./assets/images/splash-logo-all.png",
+      "image": "./assets/images/splash-screen.png",
       "resizeMode": "contain",
-      "backgroundColor": "#191015"
+      "backgroundColor": "#F8F9FA"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -20,27 +20,12 @@
     "assetBundlePatterns": ["**/*"],
     "android": {
       "icon": "./assets/images/app-icon-android-legacy.png",
-      "package": "com.bmsiot",
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/images/app-icon-android-adaptive-foreground.png",
-        "backgroundImage": "./assets/images/app-icon-android-adaptive-background.png"
-      },
-      "splash": {
-        "image": "./assets/images/splash-logo-android-universal.png",
-        "resizeMode": "contain",
-        "backgroundColor": "#191015"
-      }
+      "package": "com.bmsiot"
     },
     "ios": {
       "icon": "./assets/images/app-icon-ios.png",
       "supportsTablet": true,
-      "bundleIdentifier": "com.bmsiot",
-      "splash": {
-        "image": "./assets/images/splash-logo-ios-mobile.png",
-        "tabletImage": "./assets/images/splash-logo-ios-tablet.png",
-        "resizeMode": "contain",
-        "backgroundColor": "#191015"
-      }
+      "bundleIdentifier": "com.bmsiot"
     },
     "web": {
       "favicon": "./assets/images/app-icon-web-favicon.png",
