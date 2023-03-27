@@ -220,11 +220,10 @@ export function Screen(props: ScreenProps) {
 }
 
 const $containerStyle: ViewStyle = {
-  flex: 1,
+  flex: 20,
   height: "100%",
   width: "100%",
 }
-
 const $keyboardAvoidingViewStyle: ViewStyle = {
   flex: 1,
 }

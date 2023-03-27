@@ -5,7 +5,6 @@ import { ImageStyle, TextStyle, View, ViewStyle } from "react-native"
 import { Button, Screen, Text } from "../components"
 import { isRTL } from "../i18n"
 import { spacing } from "../theme"
-
 import { styled } from "nativewind"
 const StyledView = styled(View)
 const StyledText = styled(Text)
@@ -46,6 +45,7 @@ const Homepage: React.FC = () => {
   const [realTimeFlowRate, setRealTimeFlowRate] = useState(0.0)
   const [totalWaterUsed, setTotalWaterUsed] = useState(0.0)
   const [valvePosition, setValvePosition] = useState("")
+  const [valvePosNumber, setValvePositionNumber] = useState(-1.0)
 
   // all axios statements
   // axios for moisture level
@@ -75,6 +75,7 @@ const Homepage: React.FC = () => {
         new_valve_pos = valve_pos == 1 ? "Closed" : "Open"
 
         setValveLastUpdated(convertUTCToIST(response.data.feeds[0].created_at))
+        setValvePositionNumber(valve_pos)
         setValvePosition(new_valve_pos)
         setTotalWaterUsed(Number(new_water))
         setRealTimeFlowRate(response.data.feeds[0].field3)
@@ -134,224 +135,99 @@ const Homepage: React.FC = () => {
 
   return (
     <>
+      {/* <SafeAreaView style={{ flex: 1, backgroundColor: "transparent" }}>
+        <View style={{ flex: 1, backgroundColor: "blue" }} />
+      </SafeAreaView> */}
       <Screen preset="scroll" safeAreaEdges={["top"]} contentContainerStyle={$container}>
         {/* card 1  - moisture level */}
-        <View style={$mycard}>
-          <View style={$myleft}>
-            <View style={$lefttop}>
-              <Text style={$metadataText} size="xxs" weight="semiBold">
-                {moistureLastUpdated}
-              </Text>
+        <Card
+          style={$item}
+          verticalAlignment="space-between"
+          HeadingComponent={
+            <>
+              <Text style={$metadataText} size="xxs" weight="semiBold" text={moistureLastUpdated} />
+            </>
+          }
+          ContentComponent={<Text size="lg" weight="bold" text="Moisture Level" />}
+          RightComponent={
+            <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
+              <Text
+                style={$metadataText}
+                size="xxs"
+                weight="semiBold"
+                text={`${moistureLevelMV} mV`}
+              />
+              <Text style={$righttext} size="xxl" weight="bold" text={`${moistureLevel} %`} />
             </View>
-            <View style={$leftbottom}>
-              <Text size="lg" weight="bold">
-                Moisture Level
-              </Text>
-            </View>
-          </View>
-
-          <View style={$myright}>
-            <View style={$righttop}>
-              <Text style={$metadataText} size="xxs" weight="semiBold">
-                {moistureLevelMV} mV
-              </Text>
-            </View>
-            <View style={$rightbottom}>
-              <Text style={$righttext} size="xxl" weight="bold">
-                {moistureLevel} %
-              </Text>
-            </View>
-          </View>
-        </View>
+          }
+        />
 
         {/* card 5 - Real Time Flow Rate */}
-        <View style={$mycard}>
-          <View style={$myleft}>
-            <View style={$lefttop}>
-              <Text style={$metadataText} size="xxs" weight="semiBold">
-                {valveLastUpdated}
-              </Text>
+        <Card
+          style={$item}
+          verticalAlignment="space-between"
+          HeadingComponent={
+            <>
+              <Text style={$metadataText} size="xxs" weight="semiBold" text={valveLastUpdated} />
+            </>
+          }
+          ContentComponent={<Text size="lg" weight="bold" text="Real Time Flow Rate (L/min)" />}
+          RightComponent={
+            <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
+              <Text style={$metadataText} size="xxs" weight="semiBold" />
+              <Text
+                style={$righttext}
+                size="xxl"
+                weight="bold"
+                text={`${realTimeFlowRate} L/min`}
+              />
             </View>
-            <View style={$leftbottom}>
-              <Text size="lg" weight="bold">
-                Real Time Flow Rate (L/min)
-              </Text>
-            </View>
-          </View>
-
-          <View style={$myright}>
-            <View style={$righttop}>
-              <Text style={$metadataText} size="xxs" weight="semiBold"></Text>
-            </View>
-            <View style={$rightbottom}>
-              <Text style={$righttext} size="xxl" weight="bold">
-                {realTimeFlowRate}
-              </Text>
-            </View>
-          </View>
-        </View>
+          }
+        />
 
         {/* card 6 - Total Water Used */}
-        <View style={$mycard}>
-          <View style={$myleft}>
-            <View style={$lefttop}>
-              <Text style={$metadataText} size="xxs" weight="semiBold">
-                {valveLastUpdated}
-              </Text>
+        <Card
+          style={$item}
+          verticalAlignment="space-between"
+          HeadingComponent={
+            <>
+              <Text style={$metadataText} size="xxs" weight="semiBold" text={valveLastUpdated} />
+            </>
+          }
+          ContentComponent={<Text size="lg" weight="bold" text="Total Water Used (Ltr)" />}
+          RightComponent={
+            <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
+              <Text style={$metadataText} size="xxs" weight="semiBold" />
+              <Text style={$righttext} size="xxl" weight="bold" text={`${totalWaterUsed}`} />
             </View>
-            <View style={$leftbottom}>
-              <Text size="lg" weight="bold">
-                Total Water Used (Ltr)
-              </Text>
-            </View>
-          </View>
-
-          <View style={$myright}>
-            <View style={$righttop}>
-              <Text style={$metadataText} size="xxs" weight="semiBold"></Text>
-            </View>
-            <View style={$rightbottom}>
-              <Text style={$righttext} size="xxl" weight="bold">
-                {totalWaterUsed}
-              </Text>
-            </View>
-          </View>
-        </View>
+          }
+        />
 
         {/* card 7 - Valve Position */}
-        <View style={$mycard}>
-          <View style={$myleft}>
-            <View style={$lefttop}>
-              <Text style={$metadataText} size="xxs" weight="semiBold">
-                {valveLastUpdated}
-              </Text>
+        <Card
+          style={$item}
+          verticalAlignment="space-between"
+          HeadingComponent={
+            <>
+              <Text style={$metadataText} size="xxs" weight="semiBold" text={valveLastUpdated} />
+            </>
+          }
+          ContentComponent={<Text size="lg" weight="bold" text="Valve Position" />}
+          RightComponent={
+            <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
+              <Text style={$metadataText} size="xxs" weight="semiBold" text={`${valvePosNumber}`} />
+              <Text style={$righttext} size="xxl" weight="bold" text={`${valvePosition}`} />
             </View>
-            <View style={$leftbottom}>
-              <Text size="lg" weight="bold">
-                Valve Position
-              </Text>
-            </View>
-          </View>
-
-          <View style={$myright}>
-            <View style={$righttop}>
-              <Text style={$metadataText} size="xxs" weight="semiBold"></Text>
-            </View>
-            <View style={$rightbottom}>
-              <Text style={$righttext} size="xxl" weight="bold">
-                {valvePosition}
-              </Text>
-            </View>
-          </View>
-        </View>
+          }
+        />
 
         {/* card 2  - water requirement */}
-        <View style={$mycard}>
-          <View style={$myleft}>
-            <View style={$lefttop}>
-              <Text style={$metadataText} size="xxs" weight="semiBold">
-                To be done
-              </Text>
-            </View>
-            <View style={$leftbottom}>
-              <Text size="lg" weight="bold">
-                Next water requirement
-              </Text>
-            </View>
-          </View>
-
-          <View style={$myright}>
-            <View style={$righttop}>
-              <Text style={$metadataText} size="xxs" weight="semiBold"></Text>
-            </View>
-            <View style={$rightbottom}>
-              <Text style={$righttext} size="xxl" weight="bold">
-                000
-              </Text>
-            </View>
-          </View>
-        </View>
 
         {/* card 3 - Temperature */}
-        <View style={$mycard}>
-          <View style={$myleft}>
-            <View style={$lefttop}>
-              <Text style={$metadataText} size="xxs" weight="semiBold">
-                To be done
-              </Text>
-            </View>
-            <View style={$leftbottom}>
-              <Text size="lg" weight="bold">
-                Temperature
-              </Text>
-            </View>
-          </View>
-
-          <View style={$myright}>
-            <View style={$righttop}>
-              <Text style={$metadataText} size="xxs" weight="semiBold"></Text>
-            </View>
-            <View style={$rightbottom}>
-              <Text style={$righttext} size="xxl" weight="bold">
-                000
-              </Text>
-            </View>
-          </View>
-        </View>
 
         {/* card 8 - Rainfall */}
-        <View style={$mycard}>
-          <View style={$myleft}>
-            <View style={$lefttop}>
-              <Text style={$metadataText} size="xxs" weight="semiBold">
-                To be done
-              </Text>
-            </View>
-            <View style={$leftbottom}>
-              <Text size="lg" weight="bold">
-                Rainfall
-              </Text>
-            </View>
-          </View>
-
-          <View style={$myright}>
-            <View style={$righttop}>
-              <Text style={$metadataText} size="xxs" weight="semiBold"></Text>
-            </View>
-            <View style={$rightbottom}>
-              <Text style={$righttext} size="xxl" weight="bold">
-                000
-              </Text>
-            </View>
-          </View>
-        </View>
 
         {/* card 4 - Humidity */}
-        <View style={$mycard}>
-          <View style={$myleft}>
-            <View style={$lefttop}>
-              <Text style={$metadataText} size="xxs" weight="semiBold">
-                To be done
-              </Text>
-            </View>
-            <View style={$leftbottom}>
-              <Text size="lg" weight="bold">
-                Humidity
-              </Text>
-            </View>
-          </View>
-
-          <View style={$myright}>
-            <View style={$righttop}>
-              <Text style={$metadataText} size="xxs" weight="semiBold"></Text>
-            </View>
-            <View style={$rightbottom}>
-              <Text style={$righttext} size="xxl" weight="bold">
-                000
-              </Text>
-            </View>
-          </View>
-        </View>
       </Screen>
     </>
   )
@@ -496,9 +372,9 @@ const $heading: ViewStyle = {
 }
 
 const $item: ViewStyle = {
-  padding: spacing.medium,
+  // padding: spacing.medium,
   marginTop: spacing.medium,
-  minHeight: 120,
+  minHeight: 100,
 }
 
 const $itemThumbnail: ImageStyle = {
