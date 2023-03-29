@@ -46,7 +46,8 @@ const en = {
     debugTab: "Debug",
     communityTab: "Community",
     podcastListTab: "Podcast",
-    homePage: "Home"
+    homePage: "Home",
+    infoPage: "Info",
   },
   Graphboard: {
     title: "Connect with the community",

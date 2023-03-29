@@ -3,23 +3,23 @@ const palette = {
   // neutral100: "#FFFFFF",
   // neutral200: "#F4F2F1",
   // neutral300: "#D7CEC9",
-  // neutral400: "#B6ACA6",
-  // neutral500: "#978F8A",
-  // neutral600: "#564E4A",
-  // neutral700: "#3C3836",
-  // neutral800: "#191015",
-  // neutral900: "#000000",
+  neutral400: "#B6ACA6",
+  neutral500: "#978F8A",
+  neutral600: "#564E4A",
+  neutral700: "#3C3836",
+  neutral800: "#191015",
+  neutral900: "#000000",
 
   //background -> 
     neutral100: "#fffefe",
     neutral200: "#fffdfd",
     neutral300: "#fefbfc",
-    neutral400: "#fefafb",
-    neutral500: "#fef9fa",
-    neutral600: "#cbc7c8",
-    neutral700: "#989596",
-    neutral800: "#666464",
-    neutral900: "#333232",
+    // neutral400: "#fefafb",
+    // neutral500: "#fef9fa",
+    // neutral600: "#cbc7c8",
+    // neutral700: "#989596",
+    // neutral800: "#666464",
+    // neutral900: "#333232",
 
   // nava bg
 
@@ -108,6 +108,7 @@ const palette = {
   accent900: "#0c1f1e",
 
   angry100: "#f2d2d6",
+  angry200: "#f87272",
   angry500:"#c02034",
 
   overlay20: "rgba(25, 16, 21, 0.2)",

@@ -9,7 +9,8 @@ import { Graphboard, DemoShowroomScreen, DemoDebugScreen } from "../screens"
 import { DemoPodcastListScreen } from "../screens/DemoPodcastListScreen"
 import { colors, spacing, typography } from "../theme"
 import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
-import Homepage from "../screens/Homepage"
+import InfoPage from "../screens/InfoPage"
+import { HomePage } from "../screens/HomePage"
 
 export type DemoTabParamList = {
   Graphboard: undefined
@@ -17,6 +18,7 @@ export type DemoTabParamList = {
   DemoDebug: undefined
   DemoPodcastList: undefined
   HomePage: undefined
+  InfoPage: undefined
 }
 
 /**
@@ -48,11 +50,22 @@ export function DemoNavigator() {
     >
       <Tab.Screen
         name="HomePage"
-        component={Homepage}
+        component={HomePage}
         options={{
           tabBarLabel: translate("demoNavigator.homePage"),
           tabBarIcon: ({ focused }) => (
             <Icon icon="home" color={focused && colors.tint} size={40} />
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="InfoPage"
+        component={InfoPage}
+        options={{
+          tabBarLabel: translate("demoNavigator.infoPage"),
+          tabBarIcon: ({ focused }) => (
+            <Icon icon="bulb" color={focused && colors.tint} size={40} />
           ),
         }}
       />
@@ -79,7 +92,7 @@ export function DemoNavigator() {
         }}
       />
 
-      <Tab.Screen
+      {/* <Tab.Screen
         name="DemoPodcastList"
         component={DemoPodcastListScreen}
         options={{
@@ -88,9 +101,9 @@ export function DemoNavigator() {
             <Icon icon="components" color={focused && colors.tint} size={30} />
           ),
         }}
-      />
+      /> */}
 
-      <Tab.Screen
+      {/* <Tab.Screen
         name="DemoDebug"
         component={DemoDebugScreen}
         options={{
@@ -99,7 +112,7 @@ export function DemoNavigator() {
             <Icon icon="components" color={focused && colors.tint} size={30} />
           ),
         }}
-      />
+      /> */}
     </Tab.Navigator>
   )
 }

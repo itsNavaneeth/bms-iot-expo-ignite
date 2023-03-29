@@ -1,19 +1,34 @@
-import React from "react"
+import { Link, RouteProp, useRoute } from "@react-navigation/native"
+import React, { FC, ReactElement, useEffect, useRef, useState } from "react"
 import axios, { AxiosRequestConfig } from "axios"
-import { useState, useEffect } from "react"
-import { ImageStyle, TextStyle, View, ViewStyle } from "react-native"
-import { Button, Screen, Text } from "../components"
+import { colors, typography } from "../theme"
+import {
+  FlatList,
+  ImageStyle,
+  Platform,
+  SectionList,
+  TextStyle,
+  View,
+  ViewStyle,
+} from "react-native"
+import { DrawerLayout } from "react-native-gesture-handler"
+import { useSharedValue } from "react-native-reanimated"
+import { Button, Card, ListItem, Screen, Text } from "../components"
 import { isRTL } from "../i18n"
+import { DemoTabParamList, DemoTabScreenProps } from "../navigators/DemoNavigator"
 import { spacing } from "../theme"
-import { styled } from "nativewind"
-const StyledView = styled(View)
-const StyledText = styled(Text)
-
-// new imports
-import { Card } from "../components"
-import { colors } from "../theme"
-
-const ICON_SIZE = 14
+import * as Demos from "./DemoShowroomScreen/demos"
+import {
+  VictoryAnimation,
+  VictoryBar,
+  VictoryChart,
+  VictoryContainer,
+  VictoryLabel,
+  VictoryPie,
+  VictoryTheme,
+} from "victory-native"
+// import { Defs } from "react-native-svg"
+import Svg, { Use, Image } from "react-native-svg"
 
 const optionsMoisture: AxiosRequestConfig = {
   method: "GET",
@@ -27,27 +42,48 @@ const optionsValve: AxiosRequestConfig = {
   params: { results: "1", api_key: "SO50RIFJSC1IIO7K" },
 }
 
-const Homepage: React.FC = () => {
-  // useStates
+const optionsUbidotsON: AxiosRequestConfig = {
+  method: "POST",
+  url: "https://industrial.api.ubidots.com/api/v1.6/variables/639179fb72ec12000c900fb2/values/",
+  headers: {
+    "content-type": "application/json",
+    "X-Auth-Token": "BBFF-LtAIEbHEpPlRavdXFOC9Nu8SRnTN9y",
+  },
+  data: { value: 0 },
+}
+
+const optionsUbidotsOFF: AxiosRequestConfiguration = {
+  method: "POST",
+  url: "https://industrial.api.ubidots.com/api/v1.6/variables/639179fb72ec12000c900fb2/values/",
+  headers: {
+    "content-type": "application/json",
+    "X-Auth-Token": "BBFF-LtAIEbHEpPlRavdXFOC9Nu8SRnTN9y",
+  },
+  data: { value: 1 },
+}
+
+export const HomePage: React.FC = () => {
+  const timeout = useRef<ReturnType<typeof setTimeout>>()
+
+  //   usestate
+  const [percent, setPercent] = useState(25)
+  const [data, setData] = useState([
+    { x: 1, y: 25 },
+    { x: 2, y: 75 },
+  ])
   const [moistureLevel, setMoistureLevel] = useState(0.0)
   const [moistureLevelMV, setMoistureLevelMV] = useState(0.0)
   const [moistureLastUpdated, setMoistureLastUpdated] = useState("")
 
-  const [nextWater, setNextWater] = useState(0.0)
-  const [nextWaterLastUpdated, setNextWaterLastUpdated] = useState("")
+  //   on off usestates
+  const [wateringStatus, setWateringStatus] = useState("OFF")
+  const [btnState, setBtnState] = useState("")
+  const [textState, setTextState] = useState("text-error")
 
-  const [temperature, setTemperature] = useState(0.0)
-  const [rainfall, setRainfall] = useState(0.0)
-  const [humidity, setHumidity] = useState(0.0)
-  const [openWeatherLastUpdated, setOpenWeatherLastUpdated] = useState("")
+  // current time
+  const [dt, setDt] = useState(new Date().toLocaleString())
 
-  const [valveLastUpdated, setValveLastUpdated] = useState("")
-  const [realTimeFlowRate, setRealTimeFlowRate] = useState(0.0)
-  const [totalWaterUsed, setTotalWaterUsed] = useState(0.0)
-  const [valvePosition, setValvePosition] = useState("")
-  const [valvePosNumber, setValvePositionNumber] = useState(-1.0)
-
-  // all axios statements
+  // * all axios statements
   // axios for moisture level
   const fetchMoisture = async () => {
     axios
@@ -56,52 +92,66 @@ const Homepage: React.FC = () => {
         setMoistureLastUpdated(convertUTCToIST(response.data.feeds[0].created_at))
         setMoistureLevelMV(response.data.feeds[0].field2)
         setMoistureLevel(convertMVtoPercentage(response.data.feeds[0].field2))
+        setPercent(convertMVtoPercentage(response.data.feeds[0].field2))
+        setData(getData(convertMVtoPercentage(response.data.feeds[0].field2)))
       })
       .catch(function (error) {
         console.error(error)
       })
   }
 
-  // axios for real time flow rate, total water used, valve position
-  const fetchValveInfo = async () => {
+  //   axios ubidots ON
+  const turnOn = async () => {
     axios
-      .request(optionsValve)
+      .request(optionsUbidotsON)
       .then(function (response) {
-        let water = response.data.feeds[0].field2
-        let new_water = Number(water).toFixed(2)
-
-        let valve_pos = response.data.feeds[0].field1
-        let new_valve_pos
-        new_valve_pos = valve_pos == 1 ? "Closed" : "Open"
-
-        setValveLastUpdated(convertUTCToIST(response.data.feeds[0].created_at))
-        setValvePositionNumber(valve_pos)
-        setValvePosition(new_valve_pos)
-        setTotalWaterUsed(Number(new_water))
-        setRealTimeFlowRate(response.data.feeds[0].field3)
+        setWateringStatus("ON")
+        setTextState("text-success")
       })
       .catch(function (error) {
         console.error(error)
       })
   }
 
-  // axios for next water requirement
+  //   axios ubidots OFF
+  const turnOff = async () => {
+    axios
+      .request(optionsUbidotsOFF)
+      .then(function (response) {
+        setWateringStatus("OFF")
+        setTextState("text-error")
+      })
+      .catch(function (error) {
+        console.error(error)
+      })
+  }
 
-  // axios for temperature, humidity and rainfall (useEffect 2 sec)
-
-  // use effect 2 sec
+  // * use effect 2 sec
   useEffect(() => {
-    const interval = setInterval(() => {
+    // let percent = 25
+    const setStateInterval = setInterval(() => {
       fetchMoisture()
-      fetchValveInfo()
     }, 2000)
-
-    return () => clearInterval(interval)
+    return () => clearInterval(setStateInterval)
   }, [])
 
-  // use effect on page refresh for openweathermap
+  // * use effect for current time
+  useEffect(() => {
+    let secTimer = setInterval(() => {
+      setDt(new Date().toLocaleString())
+    }, 1000)
 
-  // all functions
+    return () => clearInterval(secTimer)
+  }, [])
+
+  const getData = (percent: number) => {
+    return [
+      { x: 1, y: percent },
+      { x: 2, y: 100 - percent },
+    ]
+  }
+
+  // * functions
   // function to convert mV to percentage
   const convertMVtoPercentage = (mV: number): number => {
     let in_min = 3200
@@ -109,6 +159,14 @@ const Homepage: React.FC = () => {
     let out_min = 0
     let out_max = 100
     let percentage = ((mV - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min
+
+    // helper code to ensure percentage isnt > 100 or < 0
+    if (percentage > 100) {
+      percentage = 100
+    } else if (percentage < 0) {
+      percentage = 0
+    }
+
     return Number(percentage.toFixed(2))
   }
 
@@ -134,275 +192,142 @@ const Homepage: React.FC = () => {
   }
 
   return (
-    <>
-      {/* <SafeAreaView style={{ flex: 1, backgroundColor: "transparent" }}>
-        <View style={{ flex: 1, backgroundColor: "blue" }} />
-      </SafeAreaView> */}
-      <Screen preset="scroll" safeAreaEdges={["top"]} contentContainerStyle={$container}>
-        {/* card 1  - moisture level */}
-        <Card
-          style={$item}
-          verticalAlignment="space-between"
-          HeadingComponent={
-            <>
-              <Text style={$metadataText} size="xxs" weight="semiBold" text={moistureLastUpdated} />
-            </>
-          }
-          ContentComponent={<Text size="lg" weight="bold" text="Moisture Level" />}
-          RightComponent={
-            <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
-              <Text
-                style={$metadataText}
-                size="xxs"
-                weight="semiBold"
-                text={`${moistureLevelMV} mV`}
+    <Screen preset="fixed" safeAreaEdges={["top"]} contentContainerStyle={$screenContainer}>
+      <View
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
+        {/* heading - Welcome */}
+        <View style={$heading}>
+          <Text preset="heading" text="Welcome" />
+        </View>
+        {/* current date and time */}
+        <Text
+          style={$metadataText}
+          size="xxs"
+          weight="semiBold"
+          text={`Current Date and Time ${dt}`}
+        />
+
+        {/* graph */}
+        <Svg viewBox="0 0 400 400" width="100%" height="40%">
+          <VictoryPie
+            standalone={false}
+            animate={{ duration: 1000 }}
+            width={400}
+            height={400}
+            data={data}
+            innerRadius={120}
+            cornerRadius={25}
+            labels={() => null}
+            style={{
+              data: {
+                fill: ({ datum }) => {
+                  let color = "green"
+                  if (datum.y < 20) {
+                    color = colors.palette.angry200
+                  } else {
+                    color = colors.palette.secondary300
+                  }
+                  return datum.x === 1 ? color : "transparent"
+                },
+              },
+            }}
+          />
+
+          <VictoryAnimation duration={1000} data={{ percent }}>
+            {(newProps) => (
+              <VictoryLabel
+                textAnchor="middle"
+                verticalAnchor="middle"
+                x={200}
+                y={200}
+                text={`${moistureLevel} %`}
+                style={{ fontSize: 36, lineHeight: 44, fontFamily: "Helvetica" }}
               />
-              <Text style={$righttext} size="xxl" weight="bold" text={`${moistureLevel} %`} />
+            )}
+          </VictoryAnimation>
+        </Svg>
+
+        <View>
+          {/* card 1  - moisture level */}
+          <Card
+            style={$item}
+            verticalAlignment="space-between"
+            HeadingComponent={
+              <>
+                <Text
+                  style={$metadataText}
+                  size="xxs"
+                  weight="semiBold"
+                  text={moistureLastUpdated}
+                />
+              </>
+            }
+            ContentComponent={<Text size="lg" weight="bold" text="Moisture Level" />}
+            RightComponent={
+              <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
+                <Text
+                  style={$metadataText}
+                  size="xxs"
+                  weight="semiBold"
+                  text={`${moistureLevelMV} mV`}
+                />
+                <Text size="xxl" weight="bold" text={`${moistureLevel} %`} />
+              </View>
+            }
+          />
+
+          {/* buttons UI */}
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              alignItems: "center",
+              //   padding: spacing.extraSmall,
+              marginVertical: spacing.large,
+            }}
+          >
+            <Text size="lg" weight="bold" text="Valve Control" />
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginBottom: spacing.medium,
+              }}
+            >
+              <Button
+                style={{
+                  flex: 1,
+                  marginRight: spacing.small,
+                  backgroundColor: colors.palette.secondary300,
+                }}
+                onPress={turnOn}
+              >
+                On
+              </Button>
+              <Button
+                style={{
+                  flex: 1,
+                  marginLeft: spacing.small,
+                  backgroundColor: colors.palette.angry200,
+                }}
+                onPress={turnOff}
+              >
+                Off
+              </Button>
             </View>
-          }
-        />
 
-        {/* card 5 - Real Time Flow Rate */}
-        <Card
-          style={$item}
-          verticalAlignment="space-between"
-          HeadingComponent={
-            <>
-              <Text style={$metadataText} size="xxs" weight="semiBold" text={valveLastUpdated} />
-            </>
-          }
-          ContentComponent={<Text size="lg" weight="bold" text="Real Time Flow Rate (L/min)" />}
-          RightComponent={
-            <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
-              <Text style={$metadataText} size="xxs" weight="semiBold" />
-              <Text
-                style={$righttext}
-                size="xxl"
-                weight="bold"
-                text={`${realTimeFlowRate} L/min`}
-              />
-            </View>
-          }
-        />
-
-        {/* card 6 - Total Water Used */}
-        <Card
-          style={$item}
-          verticalAlignment="space-between"
-          HeadingComponent={
-            <>
-              <Text style={$metadataText} size="xxs" weight="semiBold" text={valveLastUpdated} />
-            </>
-          }
-          ContentComponent={<Text size="lg" weight="bold" text="Total Water Used (Ltr)" />}
-          RightComponent={
-            <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
-              <Text style={$metadataText} size="xxs" weight="semiBold" />
-              <Text style={$righttext} size="xxl" weight="bold" text={`${totalWaterUsed}`} />
-            </View>
-          }
-        />
-
-        {/* card 7 - Valve Position */}
-        <Card
-          style={$item}
-          verticalAlignment="space-between"
-          HeadingComponent={
-            <>
-              <Text style={$metadataText} size="xxs" weight="semiBold" text={valveLastUpdated} />
-            </>
-          }
-          ContentComponent={<Text size="lg" weight="bold" text="Valve Position" />}
-          RightComponent={
-            <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
-              <Text style={$metadataText} size="xxs" weight="semiBold" text={`${valvePosNumber}`} />
-              <Text style={$righttext} size="xxl" weight="bold" text={`${valvePosition}`} />
-            </View>
-          }
-        />
-
-        {/* card 2  - water requirement */}
-
-        {/* card 3 - Temperature */}
-
-        {/* card 8 - Rainfall */}
-
-        {/* card 4 - Humidity */}
-      </Screen>
-    </>
+            <Text size="lg" weight="bold" text={`Watering system is now ${wateringStatus}`} />
+          </View>
+        </View>
+      </View>
+    </Screen>
   )
-}
-
-// my css again
-const $mycard: ViewStyle = {
-  display: "flex",
-  flexDirection: "row",
-  height: 120,
-  // justifyContent: "space-between",
-  // padding: 15,
-  backgroundColor: "white",
-  borderRadius: 10,
-  marginVertical: 8,
-
-  shadowColor: colors.palette.neutral800,
-  shadowOffset: { width: 0, height: 12 },
-  shadowOpacity: 0.3,
-  shadowRadius: 12.81,
-  elevation: 16,
-}
-
-const $myleft: ViewStyle = {
-  display: "flex",
-  flex: 1,
-  flexDirection: "column",
-  justifyContent: "space-between",
-  // backgroundColor: "pink",
-}
-
-const $myright: ViewStyle = {
-  display: "flex",
-  flex: 1,
-  flexDirection: "column",
-  justifyContent: "space-between",
-  // backgroundColor: "violet",
-}
-
-const $lefttop: TextStyle = {
-  flex: 1,
-  // backgroundColor: "yellow",
-  // textAlign: "center",
-  flexWrap: "wrap",
-  marginVertical: 10,
-  marginHorizontal: 15,
-  color: colors.textDim,
-}
-
-const $leftbottom: TextStyle = {
-  flex: 5,
-  // backgroundColor: "indigo",
-  // textAlign: "center",
-  justifyContent: "center",
-  alignItems: "flex-end",
-  flexWrap: "wrap",
-  paddingLeft: 15,
-  // paddingVertical: "auto",
-}
-
-const $righttop: ViewStyle = {
-  flex: 1,
-  // backgroundColor: "yellow",
-  // textAlign: "center",
-  flexWrap: "wrap",
-  marginVertical: 10,
-  marginHorizontal: 15,
-}
-
-const $rightbottom: ViewStyle = {
-  display: "flex",
-  flex: 5,
-  // backgroundColor: "purple",
-  // textAlign: "center",
-  justifyContent: "center",
-  alignItems: "center",
-  flexWrap: "wrap",
-  paddingLeft: 15,
-  paddingVertical: "auto",
-}
-
-const $righttext: TextStyle = {
-  // color: colors.textDim,
-}
-// end of my css
-
-const $container: ViewStyle = {
-  paddingTop: spacing.large + spacing.extraLarge,
-  paddingHorizontal: spacing.large,
-}
-
-const $title: TextStyle = {
-  marginBottom: spacing.small,
-}
-
-const $tagline: TextStyle = {
-  marginBottom: spacing.huge,
-}
-
-const $description: TextStyle = {
-  marginBottom: spacing.large,
-}
-
-const $sectionTitle: TextStyle = {
-  marginTop: spacing.huge,
-}
-
-const $logoContainer: ViewStyle = {
-  marginEnd: spacing.medium,
-  flexDirection: "row",
-  flexWrap: "wrap",
-  alignContent: "center",
-}
-
-const $logo: ImageStyle = {
-  height: 38,
-  width: 38,
-}
-
-// @demo remove-file
-
-// my css
-const $cardright: ViewStyle = {
-  flex: 1,
-  flexDirection: "column",
-  justifyContent: "center",
-}
-
-// #region Styles
-const $screenContentContainer: ViewStyle = {
-  flex: 1,
-}
-
-const $flatListContentContainer: ViewStyle = {
-  paddingHorizontal: spacing.large,
-  paddingTop: spacing.large + spacing.extraLarge,
-  paddingBottom: spacing.large,
-}
-
-const $heading: ViewStyle = {
-  marginBottom: spacing.medium,
-}
-
-const $item: ViewStyle = {
-  // padding: spacing.medium,
-  marginTop: spacing.medium,
-  minHeight: 100,
-}
-
-const $itemThumbnail: ImageStyle = {
-  marginTop: spacing.small,
-  borderRadius: 50,
-  alignSelf: "flex-start",
-}
-
-const $toggle: ViewStyle = {
-  marginTop: spacing.medium,
-}
-
-const $labelStyle: TextStyle = {
-  textAlign: "left",
-}
-
-const $iconContainer: ViewStyle = {
-  height: ICON_SIZE,
-  width: ICON_SIZE,
-  flexDirection: "row",
-  marginEnd: spacing.small,
-}
-
-const $metadata: TextStyle = {
-  color: colors.textDim,
-  marginTop: spacing.micro,
-  flexDirection: "row",
-  flex: 1,
 }
 
 const $metadataText: TextStyle = {
@@ -411,33 +336,67 @@ const $metadataText: TextStyle = {
   marginBottom: spacing.extraSmall,
 }
 
-const $favoriteButton: ViewStyle = {
-  borderRadius: 17,
+const $item: ViewStyle = {
+  // padding: spacing.medium,
   marginTop: spacing.medium,
-  justifyContent: "flex-start",
-  backgroundColor: colors.palette.neutral300,
-  borderColor: colors.palette.neutral300,
-  paddingHorizontal: spacing.medium,
-  paddingTop: spacing.micro,
-  paddingBottom: 0,
-  minHeight: 32,
+  minHeight: 100,
+}
+
+const $victoryitem: ViewStyle = {
+  padding: spacing.medium,
+  marginTop: spacing.medium,
+  minHeight: 100,
+}
+
+const $screenContainer: ViewStyle = {
+  //   flex: 1,
+  paddingTop: spacing.large,
+  paddingHorizontal: spacing.large,
+}
+
+const $drawer: ViewStyle = {
+  flex: 1,
+}
+
+const $flatListContentContainer: ViewStyle = {
+  paddingHorizontal: spacing.large,
+}
+
+const $sectionListContentContainer: ViewStyle = {
+  paddingHorizontal: spacing.large,
+}
+
+const $heading: ViewStyle = {
+  marginBottom: spacing.medium,
+}
+
+const $logoImage: ImageStyle = {
+  height: 42,
+  width: 77,
+}
+
+const $logoContainer: ViewStyle = {
   alignSelf: "flex-start",
+  height: 56,
+  paddingHorizontal: spacing.large,
 }
 
-const $unFavoriteButton: ViewStyle = {
-  borderColor: colors.palette.primary100,
-  backgroundColor: colors.palette.primary100,
+const $menuContainer: ViewStyle = {
+  paddingBottom: spacing.extraSmall,
+  paddingTop: spacing.large,
 }
 
-const $emptyState: ViewStyle = {
-  marginTop: spacing.huge,
+const $demoItemName: TextStyle = {
+  fontSize: 24,
+  marginBottom: spacing.medium,
 }
 
-const $emptyStateImage: ImageStyle = {
-  transform: [{ scaleX: isRTL ? -1 : 1 }],
+const $demoItemDescription: TextStyle = {
+  marginBottom: spacing.huge,
 }
-// #endregion
+
+const $demoUseCasesSpacer: ViewStyle = {
+  paddingBottom: spacing.huge,
+}
 
 // @demo remove-file
-
-export default Homepage
