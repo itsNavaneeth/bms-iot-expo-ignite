@@ -154,8 +154,8 @@ export const HomePage: React.FC = () => {
   // * functions
   // function to convert mV to percentage
   const convertMVtoPercentage = (mV: number): number => {
-    let in_min = 3200
-    let in_max = 1300
+    let in_min = 4000
+    let in_max = 2000
     let out_min = 0
     let out_max = 100
     let percentage = ((mV - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min

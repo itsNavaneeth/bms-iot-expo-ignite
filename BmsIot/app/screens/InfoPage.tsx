@@ -59,6 +59,7 @@ const InfoPage: React.FC = () => {
   // next day water requirement use states
   const [tomPrediction, setTomPrediction] = useState(0.0)
   const [fieldValue, setFieldValue] = useState(null)
+  const [prevFieldValue, setPrevFieldValue] = useState(null)
   const [gcpLastUpdated, setGCPLastUpdated] = useState("")
 
   // current time
@@ -104,31 +105,32 @@ const InfoPage: React.FC = () => {
 
   // axios for next water requirement
   async function fetchData() {
-    const response = await fetch(
-      "https://api.thingspeak.com/channels/1978647/fields/3.json?results=1",
-    )
+    const response = await fetch("https://api.thingspeak.com/channels/1978647/feeds.json?results=1")
     const data = await response.json()
-    setFieldValue(data.feeds[0].field3)
+    setPrevFieldValue(Number(data.feeds[0].field4).toFixed(2))
+    setFieldValue(Number(data.feeds[0].field3).toFixed(2))
     setGCPLastUpdated(convertUTCToIST(data.feeds[0].created_at))
 
-    let temp = (fieldValue * 100) / 0.72
-    let percentage = 0.0
-    let empty = 0
-    let full = 100
-    let min_moisture = 800
-    let max_moisture = 2800
+    // let temp = (fieldValue * 100) / 0.72
+    // let percentage = 0.0
+    // let empty = 0
+    // let full = 100
+    // let min_moisture = 800
+    // let max_moisture = 2800
 
-    percentage =
-      full - ((full - empty) * (temp - min_moisture)) / (max_moisture - min_moisture) + empty
+    // percentage =
+    //   full - ((full - empty) * (temp - min_moisture)) / (max_moisture - min_moisture) + empty
 
-    let duration = (70 - percentage) * 3
-    if (duration < 0) {
-      duration = 0
-    }
-    duration = Number(duration.toFixed(0))
-    let ltr = (duration * 20) / 7.5
-    ltr = Number(ltr.toFixed(2))
-    setTomPrediction(ltr)
+    // let duration = (70 - percentage) * 3
+    // if (duration < 0) {
+    //   duration = 0
+    // }
+    // duration = Number(duration.toFixed(0))
+    // let ltr = (duration * 20) / 7.5
+    // ltr = Number(ltr.toFixed(2))
+
+    let ltr = (17 - data.feeds[0].field3) * 200
+    setTomPrediction(Number(ltr.toFixed(2)))
   }
 
   // axios for temperature, humidity and rainfall (on button click)
@@ -185,8 +187,8 @@ const InfoPage: React.FC = () => {
   // * all functions
   // function to convert mV to percentage
   const convertMVtoPercentage = (mV: number): number => {
-    let in_min = 3200
-    let in_max = 1300
+    let in_min = 4000
+    let in_max = 2000
     let out_min = 0
     let out_max = 100
     let percentage = ((mV - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min
@@ -346,7 +348,7 @@ const InfoPage: React.FC = () => {
           ContentComponent={<Text size="lg" weight="bold" text="Water Requirement" />}
           RightComponent={
             <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
-              <Text style={$metadataText} size="xxs" weight="semiBold" />
+              <Text style={$metadataText} size="xxs" weight="semiBold" text={`16.12 -> 15.66`} />
               <Text style={$righttext} size="xxl" weight="bold" text={`${tomPrediction} L`} />
             </View>
           }
