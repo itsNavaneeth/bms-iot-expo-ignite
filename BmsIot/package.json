@@ -73,7 +73,8 @@
     "reactotron-react-js": "^3.3.7",
     "reactotron-react-native": "5.0.3",
     "tailwindcss": "^3.2.7",
-    "victory-native": "^36.6.8"
+    "victory-native": "^36.6.8",
+    "expo-updates": "~0.15.6"
   },
   "devDependencies": {
     "@babel/core": "^7.19.3",
