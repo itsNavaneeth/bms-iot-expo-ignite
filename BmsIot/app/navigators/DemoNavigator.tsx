@@ -5,12 +5,11 @@ import { TextStyle, ViewStyle } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { Icon } from "../components"
 import { translate } from "../i18n"
-import { Graphboard, DemoShowroomScreen, DemoDebugScreen } from "../screens"
-import { DemoPodcastListScreen } from "../screens/DemoPodcastListScreen"
+import { Graphboard, DemoShowroomScreen} from "../screens"
 import { colors, spacing, typography } from "../theme"
 import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
 import InfoPage from "../screens/InfoPage"
-import { HomePage } from "../screens/HomePage"
+import { HomePage } from "../screens/Homepage"
 
 export type DemoTabParamList = {
   Graphboard: undefined
@@ -85,9 +84,9 @@ export function DemoNavigator() {
         name="Graphboard"
         component={Graphboard}
         options={{
-          tabBarLabel: translate("demoNavigator.communityTab"),
+          tabBarLabel: translate("demoNavigator.graphboardPage"),
           tabBarIcon: ({ focused }) => (
-            <Icon icon="components" color={focused && colors.tint} size={30} />
+            <Icon icon="graph" color={focused && colors.tint} size={30} />
           ),
         }}
       />
