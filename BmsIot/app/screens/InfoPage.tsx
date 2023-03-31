@@ -26,6 +26,15 @@ const optionsValve: AxiosRequestConfig = {
   url: "https://api.thingspeak.com/channels/2028983/feeds.json",
   params: { results: "1", api_key: "SO50RIFJSC1IIO7K" },
 }
+const optionsOpenWeather: AxiosRequestConfig = {
+  method: "GET",
+  url: "https://api.openweathermap.org/data/2.5/weather",
+  params: {
+    lat: "13",
+    lon: "77.5",
+    appid: "406b154331868aa69ddc3dd64454c8c6",
+  },
+}
 
 const InfoPage: React.FC = () => {
   // useStates
@@ -46,6 +55,11 @@ const InfoPage: React.FC = () => {
   const [totalWaterUsed, setTotalWaterUsed] = useState(0.0)
   const [valvePosition, setValvePosition] = useState("")
   const [valvePosNumber, setValvePositionNumber] = useState(-1.0)
+
+  // next day water requirement use states
+  const [tomPrediction, setTomPrediction] = useState(0.0)
+  const [fieldValue, setFieldValue] = useState(null)
+  const [gcpLastUpdated, setGCPLastUpdated] = useState("")
 
   // current time
   const [dt, setDt] = useState(new Date().toLocaleString())
@@ -89,14 +103,78 @@ const InfoPage: React.FC = () => {
   }
 
   // axios for next water requirement
+  async function fetchData() {
+    const response = await fetch(
+      "https://api.thingspeak.com/channels/1978647/fields/3.json?results=1",
+    )
+    const data = await response.json()
+    setFieldValue(data.feeds[0].field3)
+    setGCPLastUpdated(convertUTCToIST(data.feeds[0].created_at))
 
-  // axios for temperature, humidity and rainfall (useEffect 2 sec)
+    let temp = (fieldValue * 100) / 0.72
+    let percentage = 0.0
+    let empty = 0
+    let full = 100
+    let min_moisture = 800
+    let max_moisture = 2800
+
+    percentage =
+      full - ((full - empty) * (temp - min_moisture)) / (max_moisture - min_moisture) + empty
+
+    let duration = (70 - percentage) * 3
+    if (duration < 0) {
+      duration = 0
+    }
+    duration = Number(duration.toFixed(0))
+    let ltr = (duration * 20) / 7.5
+    ltr = Number(ltr.toFixed(2))
+    setTomPrediction(ltr)
+  }
+
+  // axios for temperature, humidity and rainfall (on button click)
+  const getEnvironment = () => {
+    axios
+      .request(optionsOpenWeather)
+      .then(function (response) {
+        console.table(response.data)
+
+        //Temperature
+        let temp: any = response.data.main.temp - 273.15
+        temp = temp.toFixed(2)
+        setTemperature(temp)
+
+        //Humidity
+        let humid = response.data.main.humidity
+        setHumidity(humid)
+
+        // time last updated
+        let onclickTime = new Date()
+        const year = onclickTime.getFullYear()
+        const month = formatDoubleDigit(onclickTime.getMonth() + 1) // Add 1 to account for zero-based indexing
+        const day = formatDoubleDigit(onclickTime.getDate())
+        const hours = formatDoubleDigit(onclickTime.getHours())
+        const minutes = formatDoubleDigit(onclickTime.getMinutes())
+        const seconds = formatDoubleDigit(onclickTime.getSeconds())
+
+        const onclickIstTime = `${hours}:${minutes}:${seconds} | ${day}/${month}/${year}`
+        setOpenWeatherLastUpdated(onclickIstTime)
+
+        // //Rainfall
+        // let rainz = response.data.main;
+        // humid = humid.toFixed(2);
+        // setHumidity(humid);
+      })
+      .catch(function (error) {
+        console.error(error)
+      })
+  }
 
   // * use effect 2 sec
   useEffect(() => {
     const interval = setInterval(() => {
       fetchMoisture()
       fetchValveInfo()
+      fetchData()
     }, 2000)
 
     return () => clearInterval(interval)
@@ -136,6 +214,7 @@ const InfoPage: React.FC = () => {
     const seconds = formatDoubleDigit(istDate.getSeconds())
 
     const istTime = `${hours}:${minutes}:${seconds} | ${day}/${month}/${year}`
+    // const istTime = new Date(date.getTime()).toLocaleString()
 
     return istTime
   }
@@ -256,12 +335,92 @@ const InfoPage: React.FC = () => {
         />
 
         {/* card 2  - water requirement */}
+        <Card
+          style={$item}
+          verticalAlignment="space-between"
+          HeadingComponent={
+            <>
+              <Text style={$metadataText} size="xxs" weight="semiBold" text={gcpLastUpdated} />
+            </>
+          }
+          ContentComponent={<Text size="lg" weight="bold" text="Water Requirement" />}
+          RightComponent={
+            <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
+              <Text style={$metadataText} size="xxs" weight="semiBold" />
+              <Text style={$righttext} size="xxl" weight="bold" text={`${tomPrediction} L`} />
+            </View>
+          }
+        />
 
         {/* card 3 - Temperature */}
+        <Card
+          onPress={getEnvironment}
+          style={$item}
+          verticalAlignment="space-between"
+          HeadingComponent={
+            <>
+              <Text
+                style={$metadataText}
+                size="xxs"
+                weight="semiBold"
+                text={openWeatherLastUpdated}
+              />
+            </>
+          }
+          ContentComponent={<Text size="lg" weight="bold" text="Temperature" />}
+          RightComponent={
+            <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
+              <Text style={$metadataText} size="xxs" weight="semiBold" />
+              <Text style={$righttext} size="xxl" weight="bold" text={`${temperature} °C`} />
+            </View>
+          }
+        />
 
         {/* card 8 - Rainfall */}
+        <Card
+          style={$item}
+          verticalAlignment="space-between"
+          HeadingComponent={
+            <>
+              <Text
+                style={$metadataText}
+                size="xxs"
+                weight="semiBold"
+                text={openWeatherLastUpdated}
+              />
+            </>
+          }
+          ContentComponent={<Text size="lg" weight="bold" text="Rainfall" />}
+          RightComponent={
+            <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
+              <Text style={$metadataText} size="xxs" weight="semiBold" />
+              <Text style={$righttext} size="xxl" weight="bold" text={`0 %`} />
+            </View>
+          }
+        />
 
         {/* card 4 - Humidity */}
+        <Card
+          style={$item}
+          verticalAlignment="space-between"
+          HeadingComponent={
+            <>
+              <Text
+                style={$metadataText}
+                size="xxs"
+                weight="semiBold"
+                text={openWeatherLastUpdated}
+              />
+            </>
+          }
+          ContentComponent={<Text size="lg" weight="bold" text="Humidity" />}
+          RightComponent={
+            <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
+              <Text style={$metadataText} size="xxs" weight="semiBold" />
+              <Text style={$righttext} size="xxl" weight="bold" text={`${humidity}`} />
+            </View>
+          }
+        />
       </Screen>
     </>
   )
