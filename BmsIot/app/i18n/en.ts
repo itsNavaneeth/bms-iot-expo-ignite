@@ -42,7 +42,7 @@ const en = {
     hint: "Hint: you can use any email address and your favorite password :)",
   },
   demoNavigator: {
-    componentsTab: "Components",
+    componentsTab: "Settings",
     debugTab: "Debug",
     graphboardPage: "Graphs",
     podcastListTab: "Podcast",
