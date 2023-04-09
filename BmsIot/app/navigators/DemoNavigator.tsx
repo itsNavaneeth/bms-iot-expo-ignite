@@ -71,23 +71,23 @@ export function DemoNavigator() {
       />
 
       <Tab.Screen
-        name="DemoShowroom"
-        component={DemoShowroomScreen}
-        options={{
-          tabBarLabel: translate("demoNavigator.componentsTab"),
-          tabBarIcon: ({ focused }) => (
-            <Icon icon="settings" color={focused && colors.tint} size={30} />
-          ),
-        }}
-      />
-
-      <Tab.Screen
         name="Graphboard"
         component={Graphboard}
         options={{
           tabBarLabel: translate("demoNavigator.communityTab"),
           tabBarIcon: ({ focused }) => (
             <Icon icon="components" color={focused && colors.tint} size={30} />
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="DemoShowroom"
+        component={DemoShowroomScreen}
+        options={{
+          tabBarLabel: translate("demoNavigator.componentsTab"),
+          tabBarIcon: ({ focused }) => (
+            <Icon icon="settings" color={focused && colors.tint} size={30} />
           ),
         }}
       />

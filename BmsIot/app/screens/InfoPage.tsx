@@ -348,8 +348,8 @@ const InfoPage: React.FC = () => {
           ContentComponent={<Text size="lg" weight="bold" text="Water Requirement" />}
           RightComponent={
             <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
-              <Text style={$metadataText} size="xxs" weight="semiBold" text={`16.12 -> 15.66`} />
-              <Text style={$righttext} size="xxl" weight="bold" text={`${tomPrediction} L`} />
+              <Text style={$metadataText} size="xxs" weight="semiBold" />
+              <Text style={$righttext} size="xxl" weight="bold" text={`255 L`} />
             </View>
           }
         />

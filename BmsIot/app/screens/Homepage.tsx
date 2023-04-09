@@ -52,7 +52,7 @@ const optionsUbidotsON: AxiosRequestConfig = {
   data: { value: 0 },
 }
 
-const optionsUbidotsOFF: AxiosRequestConfiguration = {
+const optionsUbidotsOFF: AxiosRequestConfig = {
   method: "POST",
   url: "https://industrial.api.ubidots.com/api/v1.6/variables/639179fb72ec12000c900fb2/values/",
   headers: {
