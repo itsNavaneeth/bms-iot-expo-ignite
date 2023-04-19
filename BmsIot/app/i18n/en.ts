@@ -48,6 +48,7 @@ const en = {
     podcastListTab: "Podcast",
     homePage: "Home",
     infoPage: "Info",
+    waterPage: "Water",
   },
   Graphboard: {
     title: "Connect with the community",

@@ -58,6 +58,7 @@ const config = {
         DemoCommunity: "community",
         HomePage: "homepage",
         InfoPage: "info",
+        WaterPage: "water",
       },
     },
   },

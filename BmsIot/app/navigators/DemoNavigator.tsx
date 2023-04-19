@@ -5,11 +5,12 @@ import { TextStyle, ViewStyle } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { Icon } from "../components"
 import { translate } from "../i18n"
-import { Graphboard, DemoShowroomScreen} from "../screens"
+import { Graphboard, DemoShowroomScreen } from "../screens"
 import { colors, spacing, typography } from "../theme"
 import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
 import InfoPage from "../screens/InfoPage"
-import { HomePage } from "../screens/Homepage"
+import { HomePage } from "../screens/HomePage"
+import WaterPage from "../screens/WaterPage"
 
 export type DemoTabParamList = {
   Graphboard: undefined
@@ -18,6 +19,7 @@ export type DemoTabParamList = {
   DemoPodcastList: undefined
   HomePage: undefined
   InfoPage: undefined
+  WaterPage: undefined
 }
 
 /**
@@ -63,6 +65,17 @@ export function DemoNavigator() {
         component={InfoPage}
         options={{
           tabBarLabel: translate("demoNavigator.infoPage"),
+          tabBarIcon: ({ focused }) => (
+            <Icon icon="bulb" color={focused && colors.tint} size={40} />
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="WaterPage"
+        component={WaterPage}
+        options={{
+          tabBarLabel: translate("demoNavigator.waterPage"),
           tabBarIcon: ({ focused }) => (
             <Icon icon="bulb" color={focused && colors.tint} size={40} />
           ),
