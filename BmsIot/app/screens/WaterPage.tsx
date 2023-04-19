@@ -2,7 +2,7 @@ import React from "react"
 import axios, { AxiosRequestConfig } from "axios"
 import { useState, useEffect } from "react"
 import { ImageStyle, TextStyle, View, ViewStyle } from "react-native"
-import { Button, Screen, Text } from "../components"
+import { Button, Screen, Text, TextField } from "../components"
 import { isRTL } from "../i18n"
 import { spacing } from "../theme"
 import { styled } from "nativewind"
@@ -61,11 +61,77 @@ const WaterPage: React.FC = () => {
   const [fieldValue, setFieldValue] = useState(null)
   const [prevFieldValue, setPrevFieldValue] = useState(null)
   const [gcpLastUpdated, setGCPLastUpdated] = useState("")
+  const [field5, setField5] = useState(0)
 
   // current time
   const [dt, setDt] = useState(new Date().toLocaleString())
 
+  //   today's and tomorrow's date
+  const [today, setToday] = useState("2023-04-17")
+  const [tmrw, setTmrw] = useState("2023-04-18")
+
+  //   today's water consumtion
+  const [todayWater, setTodayWater] = useState(0)
+  const [thingspeakNumber, setThingspeakNumber] = useState("1")
+
   // * all axios statements
+
+  //   axios config
+
+  const optionsTSwrite: AxiosRequestConfig = {
+    method: "POST",
+    url: "https://api.thingspeak.com/update.json",
+    params: {
+      api_key: "ZHOH25HNVZC2KLJM",
+      field5: thingspeakNumber,
+    },
+  }
+
+  const optionsWater: AxiosRequestConfig = {
+    method: "GET",
+    url: "https://api.thingspeak.com/channels/2028983/fields/2.json",
+    params: {
+      start: { today },
+      end: { tmrw },
+      api_key: "E0TVAT7SEAK0ALI9",
+      timezone: "Asia%2FKolkata",
+    },
+  }
+
+  //   axios for updating thingspeak value
+  const updateGCP = async () => {
+    axios
+      .request(optionsTSwrite)
+      .then(function (response) {
+        console.log(response)
+      })
+      .catch(function (error) {
+        console.error(error)
+      })
+  }
+
+  //   axios for getting today's water json
+  const todayWaterAPI = async () => {
+    axios
+      .request(optionsWater)
+      .then(function (response) {
+        let total = 0
+        const feeds = response.data.feeds
+        // console.log(feeds[0].created_at)
+        for (let i = 1; i < feeds.length; i++) {
+          if (feeds[i].field2 > feeds[i - 1].field2) {
+            total += feeds[i].field2 - feeds[i - 1].field2
+          }
+        }
+        let new_total = total.toFixed(2)
+        // console.log(new_total)
+        setTodayWater(Number(new_total))
+      })
+      .catch(function (error) {
+        console.error(error)
+      })
+  }
+
   // axios for moisture level
   const fetchMoisture = async () => {
     axios
@@ -110,6 +176,7 @@ const WaterPage: React.FC = () => {
     setPrevFieldValue(Number(data.feeds[0].field4).toFixed(2))
     setFieldValue(Number(data.feeds[0].field3).toFixed(2))
     setGCPLastUpdated(convertUTCToIST(data.feeds[0].created_at))
+    setField5(Number(data.feeds[0].field5))
 
     // let temp = (fieldValue * 100) / 0.72
     // let percentage = 0.0
@@ -182,7 +249,31 @@ const WaterPage: React.FC = () => {
     return () => clearInterval(interval)
   }, [])
 
-  // use effect on page refresh for openweathermap
+  // use effect on page refresh
+  useEffect(() => {
+    let today = new Date()
+    let tomorrow = new Date(today)
+    tomorrow.setDate(tomorrow.getDate() + 1)
+
+    let todayYear = today.getFullYear()
+    let todayMonth = ("0" + (today.getMonth() + 1)).slice(-2)
+    let todayDay = ("0" + today.getDate()).slice(-2)
+    let todayFormatted = todayYear + "-" + todayMonth + "-" + todayDay
+
+    let tmrwYear = tomorrow.getFullYear()
+    let tmrwMonth = ("0" + (tomorrow.getMonth() + 1)).slice(-2)
+    let tmrwDay = ("0" + tomorrow.getDate()).slice(-2)
+    let tmrwFormatted = tmrwYear + "-" + tmrwMonth + "-" + tmrwDay
+
+    console.log("Today: " + todayFormatted) // Output: "Today: 2023-04-19"
+    console.log("Tomorrow: " + tmrwFormatted) // Output: "Tomorrow: 2023-04-20"
+
+    setToday(todayFormatted)
+    setTmrw(tmrwFormatted)
+
+    // today's water used
+    // todayWaterAPI()
+  }, [])
 
   // * all functions
   // function to convert mV to percentage
@@ -237,48 +328,37 @@ const WaterPage: React.FC = () => {
   return (
     <>
       <Screen preset="scroll" safeAreaEdges={["top"]} contentContainerStyle={$container}>
-        {/* card 0  - current date */}
-        <Card
-          style={$item}
-          verticalAlignment="top"
-          HeadingComponent={
-            <>
-              <Text
-                style={$metadataText}
-                size="xxs"
-                weight="semiBold"
-                text="Current Date and Time"
-              />
-            </>
-          }
-          ContentComponent={<Text size="lg" weight="bold" text={`${dt}`} />}
+        {/* buttons UI */}
+        <Text
+          size="lg"
+          weight="bold"
+          text="Update Water Needed"
+          style={{
+            marginBottom: spacing.medium,
+          }}
         />
-
-        {/* card 1  - moisture level */}
-        <Card
-          style={$item}
-          verticalAlignment="space-between"
-          HeadingComponent={
-            <>
-              <Text style={$metadataText} size="xxs" weight="semiBold" text={moistureLastUpdated} />
-            </>
-          }
-          ContentComponent={<Text size="lg" weight="bold" text="Moisture Level" />}
-          RightComponent={
-            <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
-              <Text
-                style={$metadataText}
-                size="xxs"
-                weight="semiBold"
-                text={`${moistureLevelMV} mV`}
-              />
-              <Text style={$righttext} size="xxl" weight="bold" text={`${moistureLevel} %`} />
-            </View>
-          }
+        <TextField
+          style={{}}
+          placeholder="useless placeholder"
+          keyboardType="numeric"
+          onChangeText={setThingspeakNumber}
+          value={thingspeakNumber}
         />
+        <Button
+          style={{
+            flex: 1,
+            backgroundColor: colors.palette.secondary300,
+            marginBottom: spacing.large,
+            marginTop: spacing.medium,
+          }}
+          onPress={updateGCP}
+        >
+          Update Thingspeak Field 5
+        </Button>
 
-        {/* card 5 - Real Time Flow Rate */}
+        {/* card 6 - Water Used Today */}
         <Card
+          onPress={todayWaterAPI}
           style={$item}
           verticalAlignment="space-between"
           HeadingComponent={
@@ -286,34 +366,11 @@ const WaterPage: React.FC = () => {
               <Text style={$metadataText} size="xxs" weight="semiBold" text={valveLastUpdated} />
             </>
           }
-          ContentComponent={<Text size="lg" weight="bold" text="Real Time Flow Rate (L/min)" />}
+          ContentComponent={<Text size="lg" weight="bold" text="Water Used Today (Ltr)" />}
           RightComponent={
             <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
               <Text style={$metadataText} size="xxs" weight="semiBold" />
-              <Text
-                style={$righttext}
-                size="xxl"
-                weight="bold"
-                text={`${realTimeFlowRate} L/min`}
-              />
-            </View>
-          }
-        />
-
-        {/* card 6 - Total Water Used */}
-        <Card
-          style={$item}
-          verticalAlignment="space-between"
-          HeadingComponent={
-            <>
-              <Text style={$metadataText} size="xxs" weight="semiBold" text={valveLastUpdated} />
-            </>
-          }
-          ContentComponent={<Text size="lg" weight="bold" text="Total Water Used (Ltr)" />}
-          RightComponent={
-            <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
-              <Text style={$metadataText} size="xxs" weight="semiBold" />
-              <Text style={$righttext} size="xxl" weight="bold" text={`${totalWaterUsed}`} />
+              <Text style={$righttext} size="xl" weight="bold" text={`${todayWater}`} />
             </View>
           }
         />
@@ -331,7 +388,7 @@ const WaterPage: React.FC = () => {
           RightComponent={
             <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
               <Text style={$metadataText} size="xxs" weight="semiBold" text={`${valvePosNumber}`} />
-              <Text style={$righttext} size="xxl" weight="bold" text={`${valvePosition}`} />
+              <Text style={$righttext} size="xl" weight="bold" text={`${valvePosition}`} />
             </View>
           }
         />
@@ -349,77 +406,7 @@ const WaterPage: React.FC = () => {
           RightComponent={
             <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
               <Text style={$metadataText} size="xxs" weight="semiBold" />
-              <Text style={$righttext} size="xxl" weight="bold" text={`255 L`} />
-            </View>
-          }
-        />
-
-        {/* card 3 - Temperature */}
-        <Card
-          onPress={getEnvironment}
-          style={$item}
-          verticalAlignment="space-between"
-          HeadingComponent={
-            <>
-              <Text
-                style={$metadataText}
-                size="xxs"
-                weight="semiBold"
-                text={openWeatherLastUpdated}
-              />
-            </>
-          }
-          ContentComponent={<Text size="lg" weight="bold" text="Temperature" />}
-          RightComponent={
-            <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
-              <Text style={$metadataText} size="xxs" weight="semiBold" />
-              <Text style={$righttext} size="xxl" weight="bold" text={`${temperature} °C`} />
-            </View>
-          }
-        />
-
-        {/* card 8 - Rainfall */}
-        <Card
-          style={$item}
-          verticalAlignment="space-between"
-          HeadingComponent={
-            <>
-              <Text
-                style={$metadataText}
-                size="xxs"
-                weight="semiBold"
-                text={openWeatherLastUpdated}
-              />
-            </>
-          }
-          ContentComponent={<Text size="lg" weight="bold" text="Rainfall" />}
-          RightComponent={
-            <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
-              <Text style={$metadataText} size="xxs" weight="semiBold" />
-              <Text style={$righttext} size="xxl" weight="bold" text={`0 %`} />
-            </View>
-          }
-        />
-
-        {/* card 4 - Humidity */}
-        <Card
-          style={$item}
-          verticalAlignment="space-between"
-          HeadingComponent={
-            <>
-              <Text
-                style={$metadataText}
-                size="xxs"
-                weight="semiBold"
-                text={openWeatherLastUpdated}
-              />
-            </>
-          }
-          ContentComponent={<Text size="lg" weight="bold" text="Humidity" />}
-          RightComponent={
-            <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
-              <Text style={$metadataText} size="xxs" weight="semiBold" />
-              <Text style={$righttext} size="xxl" weight="bold" text={`${humidity}`} />
+              <Text style={$righttext} size="xl" weight="bold" text={`${field5} L`} />
             </View>
           }
         />
