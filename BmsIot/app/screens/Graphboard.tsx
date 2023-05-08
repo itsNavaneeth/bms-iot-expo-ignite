@@ -27,14 +27,14 @@ import { colors, spacing } from "../theme"
 
 const optionsMoisture: AxiosRequestConfig = {
   method: "GET",
-  url: "https://api.thingspeak.com/channels/2028980/fields/2.json",
-  params: { results: "1", api_key: "SO50RIFJSC1IIO7K" },
+  url: "https://api.thingspeak.com/channels/1958878/fields/1.json",
+  params: { results: "1", api_key: "N2FJP53Q2OIEDX4M" },
 }
 
 const optionsMoisture2: AxiosRequestConfig = {
   method: "GET",
-  url: "https://api.thingspeak.com/channels/2028980/fields/2.json",
-  params: { results: "15", api_key: "SO50RIFJSC1IIO7K" },
+  url: "https://api.thingspeak.com/channels/1958878/fields/1.json",
+  params: { results: "15", api_key: "N2FJP53Q2OIEDX4M" },
 }
 
 export const Graphboard: FC<DemoTabScreenProps<"Graphboard">> = function Graphboard(_props) {
@@ -52,9 +52,9 @@ export const Graphboard: FC<DemoTabScreenProps<"Graphboard">> = function Graphbo
     axios
       .request(optionsMoisture2)
       .then((response) => {
-        const newData = response.data.feeds.map((feed: { created_at: string; field2: string }) => ({
+        const newData = response.data.feeds.map((feed: { created_at: string; field1: string }) => ({
           created_at: convertUTCToISTTime(feed.created_at),
-          field2: parseInt(feed.field2),
+          field2: parseInt(feed.field1),
         }))
         setThingData(newData)
       })
@@ -67,8 +67,8 @@ export const Graphboard: FC<DemoTabScreenProps<"Graphboard">> = function Graphbo
       .request(optionsMoisture)
       .then(function (response) {
         setMoistureLastUpdated(convertUTCToIST(response.data.feeds[0].created_at))
-        setMoistureLevelMV(response.data.feeds[0].field2)
-        setMoistureLevel(convertMVtoPercentage(response.data.feeds[0].field2))
+        setMoistureLevelMV(response.data.feeds[0].field1)
+        setMoistureLevel(convertMVtoPercentage(response.data.feeds[0].field1))
       })
       .catch(function (error) {
         console.error(error)
@@ -78,8 +78,8 @@ export const Graphboard: FC<DemoTabScreenProps<"Graphboard">> = function Graphbo
   // * all functions
   // function to convert mV to percentage
   const convertMVtoPercentage = (mV: number): number => {
-    let in_min = 4000
-    let in_max = 2000
+    let in_min = 3000
+    let in_max = 1000
     let out_min = 0
     let out_max = 100
     let percentage = ((mV - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min
@@ -122,12 +122,12 @@ export const Graphboard: FC<DemoTabScreenProps<"Graphboard">> = function Graphbo
   }, [])
 
   useEffect(() => {
-    fetch("https://api.thingspeak.com/channels/2028980/fields/2.json?results=5")
+    fetch("https://api.thingspeak.com/channels/1958878/fields/1.json?results=5")
       .then((response) => response.json())
       .then((jsonData) => {
         const newData = jsonData.feeds.map((feed) => ({
           created_at: convertUTCToISTTime(feed.created_at),
-          field2: parseInt(feed.field2),
+          field2: parseInt(feed.field1),
         }))
         setThingData(newData)
       })
@@ -186,7 +186,7 @@ export const Graphboard: FC<DemoTabScreenProps<"Graphboard">> = function Graphbo
           width={parentWidth}
           height={parentHeight}
           theme={VictoryTheme.material}
-          domain={{ y: [1500, 3000] }}
+          domain={{ y: [500, 3000] }}
         >
           <VictoryLine
             style={{ data: { stroke: "green", strokeWidth: 5 } }}
