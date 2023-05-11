@@ -497,6 +497,8 @@ const $righttext: TextStyle = {
 // end of my css
 
 const $container: ViewStyle = {
+  height:"100%",
+  padding:"3%",
   paddingTop: spacing.large + spacing.extraLarge,
   paddingHorizontal: spacing.large,
 }

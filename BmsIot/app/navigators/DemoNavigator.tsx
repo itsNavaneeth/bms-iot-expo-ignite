@@ -9,7 +9,7 @@ import { Graphboard, DemoShowroomScreen } from "../screens"
 import { colors, spacing, typography } from "../theme"
 import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
 import InfoPage from "../screens/InfoPage"
-import { HomePage } from "../screens/HomePage"
+import { HomePage} from "../screens/Homepage"
 import WaterPage from "../screens/WaterPage"
 
 export type DemoTabParamList = {
@@ -93,7 +93,7 @@ export function DemoNavigator() {
         }}
       />
 
-      <Tab.Screen
+      {/* <Tab.Screen
         name="DemoShowroom"
         component={DemoShowroomScreen}
         options={{
@@ -102,7 +102,7 @@ export function DemoNavigator() {
             <Icon icon="settings" color={focused && colors.tint} size={30} />
           ),
         }}
-      />
+      /> */}
 
       {/* <Tab.Screen
         name="DemoPodcastList"

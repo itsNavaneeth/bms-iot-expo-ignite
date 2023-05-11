@@ -62,7 +62,7 @@
     "mobx-state-tree": "5.1.5",
     "nativewind": "^2.0.11",
     "react": "18.1.0",
-    "react-native": "0.70.5",
+    "react-native": "0.70.8",
     "react-native-bootsplash": "4.3.2",
     "react-native-gesture-handler": "~2.8.0",
     "react-native-reanimated": "~2.12.0",

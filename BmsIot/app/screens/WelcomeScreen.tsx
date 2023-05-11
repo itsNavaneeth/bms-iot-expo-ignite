@@ -41,15 +41,19 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
   return (
     <View style={$container}>
       <View style={$topContainer}>
-        <Image style={$welcomeLogo} source={welcomeLogo} resizeMode="contain" />
+        {/* <Image style={$welcomeLogo} source={welcomeLogo} resizeMode="contain" /> */}
         <Text
           testID="welcome-heading"
           style={$welcomeHeading}
-          tx="welcomeScreen.readyForLaunch"
+          // tx="welcomeScreen.readyForLaunch"
+          text="Welcome to BMS-IoT"
           preset="heading"
         />
-        <Text tx="welcomeScreen.exciting" preset="subheading" />
-        <Image style={$welcomeFace} source={welcomeFace} resizeMode="contain" />
+        <Text 
+        // tx="welcomeScreen.exciting" 
+        text="Control your irrigation system using our smart solution!"
+        preset="subheading" />
+        {/* <Image style={$welcomeFace} source={welcomeFace} resizeMode="contain" /> */}
       </View>
 
       <View style={[$bottomContainer, $bottomContainerInsets]}>
