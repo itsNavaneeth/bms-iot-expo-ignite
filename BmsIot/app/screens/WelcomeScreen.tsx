@@ -41,7 +41,7 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
   return (
     <View style={$container}>
       <View style={$topContainer}>
-        {/* <Image style={$welcomeLogo} source={welcomeLogo} resizeMode="contain" /> */}
+        {/* <Image style={$welcomeLogo} source={Bms} resizeMode="contain" /> */}
         <Text
           testID="welcome-heading"
           style={$welcomeHeading}
@@ -53,7 +53,7 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
         // tx="welcomeScreen.exciting" 
         text="Control your irrigation system using our smart solution!"
         preset="subheading" />
-        {/* <Image style={$welcomeFace} source={welcomeFace} resizeMode="contain" /> */}
+        <Image style={$welcomeFace} source={welcomeFace} resizeMode="contain" />
       </View>
 
       <View style={[$bottomContainer, $bottomContainerInsets]}>
@@ -62,6 +62,7 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
         <Button
           testID="next-screen-button"
           preset="reversed"
+          
           tx="welcomeScreen.letsGo"
           onPress={goNext}
         />
