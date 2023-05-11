@@ -237,24 +237,19 @@ const InfoPage: React.FC = () => {
   return (
     <>
       <Screen preset="scroll" safeAreaEdges={["top"]} contentContainerStyle={$container}>
-        {/* card 0  - current date */}
-        <Card
-          style={$item}
-          verticalAlignment="top"
-          HeadingComponent={
-            <>
-              <Text
-                style={$metadataText}
-                size="xxs"
-                weight="semiBold"
-                text="Current Date and Time"
-              />
-            </>
-          }
-          ContentComponent={<Text size="lg" weight="bold" text={`${dt}`} />}
-        />
 
-        {/* card 1  - moisture level */}
+
+        <View style={$title}>
+          <Text preset="heading" text="Data Center" />
+          <Text preset="subheading" text="View some useful metrics" />
+        </View>
+
+
+
+
+        <View style={$bgm}>
+          <Text preset="formLabel" text="Hydrological Factors" style={$whiteText} />
+          
         <Card
           style={$item}
           verticalAlignment="space-between"
@@ -277,28 +272,7 @@ const InfoPage: React.FC = () => {
           }
         />
 
-        {/* card 5 - Real Time Flow Rate */}
-        <Card
-          style={$item}
-          verticalAlignment="space-between"
-          HeadingComponent={
-            <>
-              <Text style={$metadataText} size="xxs" weight="semiBold" text={valveLastUpdated} />
-            </>
-          }
-          ContentComponent={<Text size="lg" weight="bold" text="Real Time Flow Rate (L/min)" />}
-          RightComponent={
-            <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
-              <Text style={$metadataText} size="xxs" weight="semiBold" />
-              <Text
-                style={$righttext}
-                size="xxl"
-                weight="bold"
-                text={`${realTimeFlowRate} L/min`}
-              />
-            </View>
-          }
-        />
+
 
         {/* card 6 - Total Water Used */}
         <Card
@@ -314,24 +288,6 @@ const InfoPage: React.FC = () => {
             <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
               <Text style={$metadataText} size="xxs" weight="semiBold" />
               <Text style={$righttext} size="xxl" weight="bold" text={`${totalWaterUsed}`} />
-            </View>
-          }
-        />
-
-        {/* card 7 - Valve Position */}
-        <Card
-          style={$item}
-          verticalAlignment="space-between"
-          HeadingComponent={
-            <>
-              <Text style={$metadataText} size="xxs" weight="semiBold" text={valveLastUpdated} />
-            </>
-          }
-          ContentComponent={<Text size="lg" weight="bold" text="Valve Position" />}
-          RightComponent={
-            <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
-              <Text style={$metadataText} size="xxs" weight="semiBold" text={`${valvePosNumber}`} />
-              <Text style={$righttext} size="xxl" weight="bold" text={`${valvePosition}`} />
             </View>
           }
         />
@@ -354,75 +310,126 @@ const InfoPage: React.FC = () => {
           }
         />
 
-        {/* card 3 - Temperature */}
+
+        </View>
+
+        <View style={$bgm}>
+          <Text preset="formLabel" text="Valve Status" style={$whiteText} />
+          
+        {/* card 5 - Real Time Flow Rate */}
         <Card
-          onPress={getEnvironment}
           style={$item}
           verticalAlignment="space-between"
           HeadingComponent={
             <>
-              <Text
-                style={$metadataText}
-                size="xxs"
-                weight="semiBold"
-                text={openWeatherLastUpdated}
-              />
+              <Text style={$metadataText} size="xxs" weight="semiBold" text={valveLastUpdated} />
             </>
           }
-          ContentComponent={<Text size="lg" weight="bold" text="Temperature" />}
+          ContentComponent={<Text size="lg" weight="bold" text="Current Flow Rate (L/min)" />}
           RightComponent={
             <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
               <Text style={$metadataText} size="xxs" weight="semiBold" />
-              <Text style={$righttext} size="xxl" weight="bold" text={`${temperature} °C`} />
+              <Text
+                style={$righttext}
+                size="xxl"
+                weight="bold"
+                text={`${realTimeFlowRate} L/min`}
+              />
+            </View>
+          }
+        />
+        {/* card 7 - Valve Position */}
+        <Card
+          style={$item}
+          verticalAlignment="space-between"
+          HeadingComponent={
+            <>
+              <Text style={$metadataText} size="xxs" weight="semiBold" text={valveLastUpdated} />
+            </>
+          }
+          ContentComponent={<Text size="lg" weight="bold" text="Valve Position" />}
+          RightComponent={
+            <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
+              <Text style={$metadataText} size="xxs" weight="semiBold" text={`${valvePosNumber}`} />
+              <Text style={$righttext} size="xxl" weight="bold" text={`${valvePosition}`} />
             </View>
           }
         />
 
-        {/* card 8 - Rainfall */}
-        <Card
-          style={$item}
-          verticalAlignment="space-between"
-          HeadingComponent={
-            <>
-              <Text
-                style={$metadataText}
-                size="xxs"
-                weight="semiBold"
-                text={openWeatherLastUpdated}
-              />
-            </>
-          }
-          ContentComponent={<Text size="lg" weight="bold" text="Rainfall" />}
-          RightComponent={
-            <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
-              <Text style={$metadataText} size="xxs" weight="semiBold" />
-              <Text style={$righttext} size="xxl" weight="bold" text={`0 %`} />
-            </View>
-          }
-        />
 
-        {/* card 4 - Humidity */}
-        <Card
-          style={$item}
-          verticalAlignment="space-between"
-          HeadingComponent={
-            <>
-              <Text
-                style={$metadataText}
-                size="xxs"
-                weight="semiBold"
-                text={openWeatherLastUpdated}
-              />
-            </>
-          }
-          ContentComponent={<Text size="lg" weight="bold" text="Humidity" />}
-          RightComponent={
-            <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
-              <Text style={$metadataText} size="xxs" weight="semiBold" />
-              <Text style={$righttext} size="xxl" weight="bold" text={`${humidity}`} />
-            </View>
-          }
-        />
+        </View>
+        <View style={$bgm}>
+          <Text preset="formLabel" text="Environmental Factors" style={$whiteText} />
+          {/* card 3 - Temperature */}
+          <Card
+            onPress={getEnvironment}
+            style={$item}
+            verticalAlignment="space-between"
+            HeadingComponent={
+              <>
+                <Text
+                  style={$metadataText}
+                  size="xxs"
+                  weight="semiBold"
+                  text={openWeatherLastUpdated}
+                />
+              </>
+            }
+            ContentComponent={<Text size="lg" weight="bold" text="Temperature" />}
+            RightComponent={
+              <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
+                <Text style={$metadataText} size="xxs" weight="semiBold" />
+                <Text style={$righttext} size="xxl" weight="bold" text={`${temperature} °C`} />
+              </View>
+            }
+          />
+
+          {/* card 8 - Rainfall */}
+          <Card
+            style={$item}
+            verticalAlignment="space-between"
+            HeadingComponent={
+              <>
+                <Text
+                  style={$metadataText}
+                  size="xxs"
+                  weight="semiBold"
+                  text={openWeatherLastUpdated}
+                />
+              </>
+            }
+            ContentComponent={<Text size="lg" weight="bold" text="Rainfall" />}
+            RightComponent={
+              <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
+                <Text style={$metadataText} size="xxs" weight="semiBold" />
+                <Text style={$righttext} size="xxl" weight="bold" text={`0 %`} />
+              </View>
+            }
+          />
+
+          {/* card 4 - Humidity */}
+          <Card
+            style={$item}
+            verticalAlignment="space-between"
+            HeadingComponent={
+              <>
+                <Text
+                  style={$metadataText}
+                  size="xxs"
+                  weight="semiBold"
+                  text={openWeatherLastUpdated}
+                />
+              </>
+            }
+            ContentComponent={<Text size="lg" weight="bold" text="Humidity" />}
+            RightComponent={
+              <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
+                <Text style={$metadataText} size="xxs" weight="semiBold" />
+                <Text style={$righttext} size="xxl" weight="bold" text={`${humidity}`} />
+              </View>
+            }
+          />
+        </View>
       </Screen>
     </>
   )
@@ -512,92 +519,25 @@ const $righttext: TextStyle = {
 const $container: ViewStyle = {
   paddingTop: spacing.large + spacing.extraLarge,
   paddingHorizontal: spacing.large,
+  backgroundColor:colors.palette.accent200
 }
 
 const $title: TextStyle = {
-  marginBottom: spacing.small,
+  // 
 }
 
-const $tagline: TextStyle = {
-  marginBottom: spacing.huge,
-}
-
-const $description: TextStyle = {
-  marginBottom: spacing.large,
-}
-
-const $sectionTitle: TextStyle = {
-  marginTop: spacing.huge,
-}
-
-const $logoContainer: ViewStyle = {
-  marginEnd: spacing.medium,
-  flexDirection: "row",
-  flexWrap: "wrap",
-  alignContent: "center",
-}
-
-const $logo: ImageStyle = {
-  height: 38,
-  width: 38,
-}
-
-// @demo remove-file
-
-// my css
-const $cardright: ViewStyle = {
-  flex: 1,
-  flexDirection: "column",
-  justifyContent: "center",
-}
-
-// #region Styles
-const $screenContentContainer: ViewStyle = {
-  flex: 1,
-}
-
-const $flatListContentContainer: ViewStyle = {
-  paddingHorizontal: spacing.large,
-  paddingTop: spacing.large + spacing.extraLarge,
-  paddingBottom: spacing.large,
-}
-
-const $heading: ViewStyle = {
-  marginBottom: spacing.medium,
-}
 
 const $item: ViewStyle = {
   // padding: spacing.medium,
   marginTop: spacing.medium,
   minHeight: 100,
+  backgroundColor: colors.palette.accent100
 }
 
-const $itemThumbnail: ImageStyle = {
-  marginTop: spacing.small,
-  borderRadius: 50,
-  alignSelf: "flex-start",
-}
 
-const $toggle: ViewStyle = {
-  marginTop: spacing.medium,
-}
+const $whiteText: TextStyle = {
+  color: "white",
 
-const $labelStyle: TextStyle = {
-  textAlign: "left",
-}
-
-const $iconContainer: ViewStyle = {
-  height: ICON_SIZE,
-  width: ICON_SIZE,
-  flexDirection: "row",
-  marginEnd: spacing.small,
-}
-
-const $metadata: TextStyle = {
-  color: colors.textDim,
-  marginTop: spacing.micro,
-  flexDirection: "row",
-  flex: 1,
 }
 
 const $metadataText: TextStyle = {
@@ -606,33 +546,16 @@ const $metadataText: TextStyle = {
   marginBottom: spacing.extraSmall,
 }
 
-const $favoriteButton: ViewStyle = {
-  borderRadius: 17,
-  marginTop: spacing.medium,
-  justifyContent: "flex-start",
-  backgroundColor: colors.palette.neutral300,
-  borderColor: colors.palette.neutral300,
-  paddingHorizontal: spacing.medium,
-  paddingTop: spacing.micro,
-  paddingBottom: 0,
-  minHeight: 32,
-  alignSelf: "flex-start",
-}
-
-const $unFavoriteButton: ViewStyle = {
-  borderColor: colors.palette.primary100,
-  backgroundColor: colors.palette.primary100,
-}
-
-const $emptyState: ViewStyle = {
+const $bgm: ViewStyle = {
+  borderColor: colors.palette.accent100,
+  backgroundColor: colors.palette.accent500,
+  padding: "5%",
+  borderRadius: 10,
   marginTop: spacing.huge,
 }
 
-const $emptyStateImage: ImageStyle = {
-  transform: [{ scaleX: isRTL ? -1 : 1 }],
-}
-// #endregion
 
-// @demo remove-file
+
+
 
 export default InfoPage
