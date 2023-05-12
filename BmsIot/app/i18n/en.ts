@@ -47,7 +47,7 @@ const en = {
     graphboardPage: "Graphs",
     podcastListTab: "Podcast",
     homePage: "Home",
-    infoPage: "Info",
+    infoPage: "Data",
     waterPage: "Water",
   },
   Graphboard: {

@@ -11,6 +11,7 @@ import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
 import InfoPage from "../screens/InfoPage"
 import { HomePage} from "../screens/Homepage"
 import WaterPage from "../screens/WaterPage"
+import { Profile } from "../screens/Profile"
 
 export type DemoTabParamList = {
   Graphboard: undefined
@@ -20,6 +21,7 @@ export type DemoTabParamList = {
   HomePage: undefined
   InfoPage: undefined
   WaterPage: undefined
+  Profile:undefined
 }
 
 /**
@@ -66,7 +68,7 @@ export function DemoNavigator() {
         options={{
           tabBarLabel: translate("demoNavigator.infoPage"),
           tabBarIcon: ({ focused }) => (
-            <Icon icon="bulb" color={focused && colors.tint} size={40} />
+            <Icon icon="view" color={focused && colors.tint} size={40} />
           ),
         }}
       />
@@ -77,7 +79,7 @@ export function DemoNavigator() {
         options={{
           tabBarLabel: translate("demoNavigator.waterPage"),
           tabBarIcon: ({ focused }) => (
-            <Icon icon="bulb" color={focused && colors.tint} size={40} />
+            <Icon icon="bell" color={focused && colors.tint} size={40} />
           ),
         }}
       />
@@ -92,6 +94,17 @@ export function DemoNavigator() {
           ),
         }}
       />
+<Tab.Screen
+        name="Profile"
+        component={Profile}
+        options={{
+          tabBarLabel: "Profile",
+          tabBarIcon: ({ focused }) => (
+            <Icon icon="community" color={focused && colors.tint} size={30} />
+          ),
+        }}
+      />
+
 
       {/* <Tab.Screen
         name="DemoShowroom"

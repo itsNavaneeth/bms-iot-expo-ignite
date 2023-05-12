@@ -328,14 +328,20 @@ const WaterPage: React.FC = () => {
   return (
     <>
       <Screen preset="scroll" safeAreaEdges={["top"]} contentContainerStyle={$container}>
+        
+      <View style={$title}>
+          <Text preset="heading" text="Water Center" />
+          <Text preset="subheading" text="Control your water estimates" />
+        </View>
         {/* buttons UI */}
+        <View style={$bgm}>
+        
         <Text
+
           size="lg"
           weight="bold"
           text="Update Water Needed"
-          style={{
-            marginBottom: spacing.medium,
-          }}
+          style={$whiteText}
         />
         <TextField
           style={{}}
@@ -347,7 +353,8 @@ const WaterPage: React.FC = () => {
         <Button
           style={{
             flex: 1,
-            backgroundColor: colors.palette.secondary300,
+            backgroundColor: colors.palette.secondary600,
+            borderColor:colors.palette.secondary600,
             marginBottom: spacing.large,
             marginTop: spacing.medium,
           }}
@@ -355,7 +362,9 @@ const WaterPage: React.FC = () => {
         >
           Update Thingspeak Field 5
         </Button>
+        </View>
 
+        <View style={$bgm}>
         {/* card 6 - Water Used Today */}
         <Card
           onPress={todayWaterAPI}
@@ -410,218 +419,63 @@ const WaterPage: React.FC = () => {
             </View>
           }
         />
+        </View>
       </Screen>
     </>
   )
 }
-
-// my css again
-const $mycard: ViewStyle = {
-  display: "flex",
-  flexDirection: "row",
-  height: 120,
-  // justifyContent: "space-between",
-  // padding: 15,
-  backgroundColor: "white",
+const $bgm: ViewStyle = {
+  borderColor: colors.palette.accent100,
+  backgroundColor: colors.palette.accent500,
+  padding: "5%",
   borderRadius: 10,
-  marginVertical: 8,
-
-  shadowColor: colors.palette.neutral800,
-  shadowOffset: { width: 0, height: 12 },
-  shadowOpacity: 0.3,
-  shadowRadius: 12.81,
-  elevation: 16,
+  marginTop: spacing.small,
 }
 
-const $myleft: ViewStyle = {
-  display: "flex",
-  flex: 1,
-  flexDirection: "column",
-  justifyContent: "space-between",
-  // backgroundColor: "pink",
-}
 
-const $myright: ViewStyle = {
-  display: "flex",
-  flex: 1,
-  flexDirection: "column",
-  justifyContent: "space-between",
-  // backgroundColor: "violet",
-}
 
-const $lefttop: TextStyle = {
-  flex: 1,
-  // backgroundColor: "yellow",
-  // textAlign: "center",
-  flexWrap: "wrap",
-  marginVertical: 10,
-  marginHorizontal: 15,
-  color: colors.textDim,
-}
-
-const $leftbottom: TextStyle = {
-  flex: 5,
-  // backgroundColor: "indigo",
-  // textAlign: "center",
-  justifyContent: "center",
-  alignItems: "flex-end",
-  flexWrap: "wrap",
-  paddingLeft: 15,
-  // paddingVertical: "auto",
-}
-
-const $righttop: ViewStyle = {
-  flex: 1,
-  // backgroundColor: "yellow",
-  // textAlign: "center",
-  flexWrap: "wrap",
-  marginVertical: 10,
-  marginHorizontal: 15,
-}
-
-const $rightbottom: ViewStyle = {
-  display: "flex",
-  flex: 5,
-  // backgroundColor: "purple",
-  // textAlign: "center",
-  justifyContent: "center",
-  alignItems: "center",
-  flexWrap: "wrap",
-  paddingLeft: 15,
-  paddingVertical: "auto",
-}
 
 const $righttext: TextStyle = {
   // color: colors.textDim,
 }
 // end of my css
 
+
+
 const $container: ViewStyle = {
   height:"100%",
-  padding:"3%",
   paddingTop: spacing.large + spacing.extraLarge,
   paddingHorizontal: spacing.large,
+  backgroundColor:colors.palette.accent200
 }
 
-const $title: TextStyle = {
-  marginBottom: spacing.small,
-}
-
-const $tagline: TextStyle = {
-  marginBottom: spacing.huge,
-}
-
-const $description: TextStyle = {
-  marginBottom: spacing.large,
-}
-
-const $sectionTitle: TextStyle = {
-  marginTop: spacing.huge,
-}
-
-const $logoContainer: ViewStyle = {
-  marginEnd: spacing.medium,
-  flexDirection: "row",
-  flexWrap: "wrap",
-  alignContent: "center",
-}
-
-const $logo: ImageStyle = {
-  height: 38,
-  width: 38,
-}
-
-// @demo remove-file
 
 // my css
-const $cardright: ViewStyle = {
-  flex: 1,
-  flexDirection: "column",
-  justifyContent: "center",
-}
 
-// #region Styles
-const $screenContentContainer: ViewStyle = {
-  flex: 1,
-}
-
-const $flatListContentContainer: ViewStyle = {
-  paddingHorizontal: spacing.large,
-  paddingTop: spacing.large + spacing.extraLarge,
-  paddingBottom: spacing.large,
-}
-
-const $heading: ViewStyle = {
+const $title: ViewStyle = {
   marginBottom: spacing.medium,
 }
+
+
+
 
 const $item: ViewStyle = {
   // padding: spacing.medium,
   marginTop: spacing.medium,
   minHeight: 100,
+  backgroundColor: colors.palette.accent100
 }
 
-const $itemThumbnail: ImageStyle = {
-  marginTop: spacing.small,
-  borderRadius: 50,
-  alignSelf: "flex-start",
-}
-
-const $toggle: ViewStyle = {
-  marginTop: spacing.medium,
-}
-
-const $labelStyle: TextStyle = {
-  textAlign: "left",
-}
-
-const $iconContainer: ViewStyle = {
-  height: ICON_SIZE,
-  width: ICON_SIZE,
-  flexDirection: "row",
-  marginEnd: spacing.small,
-}
-
-const $metadata: TextStyle = {
-  color: colors.textDim,
-  marginTop: spacing.micro,
-  flexDirection: "row",
-  flex: 1,
-}
 
 const $metadataText: TextStyle = {
   color: colors.textDim,
   marginEnd: spacing.medium,
-  marginBottom: spacing.extraSmall,
 }
 
-const $favoriteButton: ViewStyle = {
-  borderRadius: 17,
-  marginTop: spacing.medium,
-  justifyContent: "flex-start",
-  backgroundColor: colors.palette.neutral300,
-  borderColor: colors.palette.neutral300,
-  paddingHorizontal: spacing.medium,
-  paddingTop: spacing.micro,
-  paddingBottom: 0,
-  minHeight: 32,
-  alignSelf: "flex-start",
+const $whiteText: TextStyle = {
+  color: "white",
+
 }
 
-const $unFavoriteButton: ViewStyle = {
-  borderColor: colors.palette.primary100,
-  backgroundColor: colors.palette.primary100,
-}
-
-const $emptyState: ViewStyle = {
-  marginTop: spacing.huge,
-}
-
-const $emptyStateImage: ImageStyle = {
-  transform: [{ scaleX: isRTL ? -1 : 1 }],
-}
-// #endregion
-
-// @demo remove-file
 
 export default WaterPage

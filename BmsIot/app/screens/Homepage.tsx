@@ -199,20 +199,25 @@ export const HomePage: React.FC = () => {
           justifyContent: "space-between",
         }}
       >
-        {/* heading - Welcome */}
-        <View style={$heading}>
-          <Text preset="heading" text="Welcome" />
+
+        <View style={$title}>
+          <Text preset="heading" text="Welcome back!" />
+          <Text preset="subheading" text="Here are some current stats" />
         </View>
         {/* current date and time */}
         <Text
           style={$metadataText}
-          size="xxs"
+          size="xs"
           weight="semiBold"
-          text={`Current Date and Time ${dt}`}
+          text={`Current Date and Time : ${dt}`}
         />
 
         {/* graph */}
-        <Svg viewBox="0 0 400 400" width="100%" height="40%">
+        
+        <Svg viewBox="0 0 400 400" width="100%" height="30%" style={{
+              backgroundColor: colors.palette.accent200,              
+              borderRadius: 20
+            }}>
           <VictoryPie
             standalone={false}
             animate={{ duration: 1000 }}
@@ -220,7 +225,7 @@ export const HomePage: React.FC = () => {
             height={400}
             data={data}
             innerRadius={120}
-            cornerRadius={25}
+            cornerRadius={50}
             labels={() => null}
             style={{
               data: {
@@ -229,7 +234,7 @@ export const HomePage: React.FC = () => {
                   if (datum.y < 20) {
                     color = colors.palette.angry200
                   } else {
-                    color = colors.palette.secondary300
+                    color = colors.palette.secondary400
                   }
                   return datum.x === 1 ? color : "transparent"
                 },
@@ -250,7 +255,7 @@ export const HomePage: React.FC = () => {
             )}
           </VictoryAnimation>
         </Svg>
-
+        
         <View>
           {/* card 1  - moisture level */}
           <Card
@@ -287,11 +292,17 @@ export const HomePage: React.FC = () => {
               flexDirection: "column",
               justifyContent: "space-between",
               alignItems: "center",
-              //   padding: spacing.extraSmall,
+              backgroundColor: colors.palette.accent200,
               marginVertical: spacing.large,
+              padding: "5%",
+              borderRadius: 10
             }}
           >
-            <Text size="lg" weight="bold" text="Valve Control" />
+            <View style={{display:"flex",justifyContent:"center",flexDirection:"column", alignItems:"center",  marginBottom:"4%"}}>
+            <Text preset="formLabel" text="Valve Control" />
+            <Text preset="formHelper" text={`Watering system is now ${wateringStatus}`} />
+            </View>
+            
             <View
               style={{
                 display: "flex",
@@ -304,7 +315,7 @@ export const HomePage: React.FC = () => {
                 style={{
                   flex: 1,
                   marginRight: spacing.small,
-                  backgroundColor: colors.palette.secondary300,
+                  backgroundColor: colors.palette.secondary400,
                 }}
                 onPress={turnOn}
               >
@@ -321,9 +332,10 @@ export const HomePage: React.FC = () => {
                 Off
               </Button>
             </View>
-
-            <Text size="lg" weight="bold" text={`Watering system is now ${wateringStatus}`} />
           </View>
+
+
+
         </View>
       </View>
     </Screen>
@@ -331,72 +343,58 @@ export const HomePage: React.FC = () => {
 }
 
 const $metadataText: TextStyle = {
-  color: colors.textDim,
+  justifyContent:"center",
+  alignItems:"center",  
   marginEnd: spacing.medium,
   marginBottom: spacing.extraSmall,
+
 }
 
 const $item: ViewStyle = {
-  // padding: spacing.medium,
-  marginTop: spacing.medium,
+  width: "100%",
   minHeight: 100,
+  marginTop: "3%",
+  borderColor: colors.palette.accent200,
+  backgroundColor: colors.palette.accent200,
+
 }
 
-const $victoryitem: ViewStyle = {
-  padding: spacing.medium,
-  marginTop: spacing.medium,
+const $center: ViewStyle = {
+  width: "100%",
   minHeight: 100,
+  justifyContent: "center",
+  marginTop: "3%",
+  borderColor: colors.palette.accent200,
+  backgroundColor: colors.palette.accent200,
+
+}
+
+
+const $boxy: ViewStyle = {
+  width: "100%",
+  minHeight: 100,
+  backgroundColor: colors.palette.accent200,
+  borderRadius:10
+
+}
+
+// const $whiten: TextStyle = {
+//   color: "white"
+// }
+
+const $status: TextStyle = {
+  marginTop: "5%"
 }
 
 const $screenContainer: ViewStyle = {
-  //   flex: 1,
-  paddingTop: spacing.large,
+  height: "100%",
+  paddingTop: "10%",
   paddingHorizontal: spacing.large,
+  backgroundColor: colors.palette.accent400
 }
 
-const $drawer: ViewStyle = {
-  flex: 1,
-}
-
-const $flatListContentContainer: ViewStyle = {
-  paddingHorizontal: spacing.large,
-}
-
-const $sectionListContentContainer: ViewStyle = {
-  paddingHorizontal: spacing.large,
-}
-
-const $heading: ViewStyle = {
-  marginBottom: spacing.medium,
-}
-
-const $logoImage: ImageStyle = {
-  height: 42,
-  width: 77,
-}
-
-const $logoContainer: ViewStyle = {
-  alignSelf: "flex-start",
-  height: 56,
-  paddingHorizontal: spacing.large,
-}
-
-const $menuContainer: ViewStyle = {
-  paddingBottom: spacing.extraSmall,
-  paddingTop: spacing.large,
-}
-
-const $demoItemName: TextStyle = {
-  fontSize: 24,
-  marginBottom: spacing.medium,
-}
-
-const $demoItemDescription: TextStyle = {
+const $title: TextStyle = {
   marginBottom: spacing.huge,
 }
 
-const $demoUseCasesSpacer: ViewStyle = {
-  paddingBottom: spacing.huge,
-}
 
-// @demo remove-file

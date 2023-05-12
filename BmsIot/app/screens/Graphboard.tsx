@@ -167,7 +167,7 @@ export const Graphboard: FC<DemoTabScreenProps<"Graphboard">> = function Graphbo
 
   // const { width } = Dimensions.get("screen")
   const { height, width, scale, fontScale } = useWindowDimensions()
-  const parentWidth = Dimensions.get("window").width * 1
+  const parentWidth = Dimensions.get("window").width * 0.85
   const parentHeight = Dimensions.get("window").height * 0.35
 
   const [selectedPoint, setSelectedPoint] = useState(null)
@@ -178,9 +178,12 @@ export const Graphboard: FC<DemoTabScreenProps<"Graphboard">> = function Graphbo
 
   return (
     <Screen preset="fixed" contentContainerStyle={$container} safeAreaEdges={["top"]}>
-      <Text preset="heading" text="Graphboard" style={$title} />
-      <Text preset="subheading" text="Live soil moisture data" style={$title} />
+      <View style={$title}>
+            <Text  preset="heading" text="Graphboard" />
+            <Text preset="subheading" text="Visualize your data in various graphs" />
+            </View>
       <View style={$topContainer1}>
+      <Text  preset="formLabel" text="Live Voltage Reading Graph" />
         {/* graph */}
         <VictoryChart
           width={parentWidth}
@@ -231,25 +234,11 @@ export const Graphboard: FC<DemoTabScreenProps<"Graphboard">> = function Graphbo
   )
 }
 
-const $item: ViewStyle = {
-  // padding: spacing.medium,
-  marginTop: spacing.medium,
-  minHeight: 100,
-}
-
-const $righttext: TextStyle = {
-  // color: colors.textDim,
-}
-
-const $metadataText: TextStyle = {
-  color: colors.textDim,
-  marginEnd: spacing.medium,
-  marginBottom: spacing.extraSmall,
-}
 
 const $topContainer1: ViewStyle = {
-  // backgroundColor: "cyan",
-  paddingLeft: 20,
+    backgroundColor:colors.palette.accent100,
+    borderRadius:10,
+  paddingLeft:"1%",
   alignItems: "center",
   flex: 1,
   justifyContent: "center",
@@ -263,46 +252,63 @@ const $topContainer2: ViewStyle = {
 }
 
 const $container: ViewStyle = {
-  // paddingTop: spacing.large + spacing.extraLarge,
+    backgroundColor:colors.palette.accent200,
   paddingHorizontal: spacing.large,
-  backgroundColor: "#ffffff",
   height: "100%",
+  paddingTop:"10%"
 }
 
-const $title: TextStyle = {
-  marginBottom: spacing.small,
+
+
+const $bgm: ViewStyle = {
+  borderColor: colors.palette.accent100,
+  backgroundColor: colors.palette.accent500,
+  padding: "5%",
+  borderRadius: 10,
+  marginTop: spacing.small,
 }
 
-const $tagline: TextStyle = {
-  marginBottom: spacing.huge,
+
+
+
+const $righttext: TextStyle = {
+  // color: colors.textDim,
+}
+// end of my css
+
+
+
+// const $container: ViewStyle = {
+//   height:"100%",
+//   paddingTop: spacing.large + spacing.extraLarge,
+//   paddingHorizontal: spacing.large,
+
+// }
+
+
+// my css
+
+const $title: ViewStyle = {
+  marginBottom: spacing.medium,
 }
 
-const $description: TextStyle = {
-  marginBottom: spacing.large,
+
+
+
+const $item: ViewStyle = {
+  // padding: spacing.medium,
+  marginTop: spacing.medium,
+  minHeight: 100,
+  backgroundColor: colors.palette.accent100
 }
 
-const $sectionTitle: TextStyle = {
-  marginTop: spacing.huge,
-}
 
-const $logoContainer: ViewStyle = {
+const $metadataText: TextStyle = {
+  color: colors.textDim,
   marginEnd: spacing.medium,
-  flexDirection: "row",
-  flexWrap: "wrap",
-  alignContent: "center",
 }
 
-const $logo: ImageStyle = {
-  height: 38,
-  width: 38,
-}
+const $whiteText: TextStyle = {
+  color: "white",
 
-// @demo remove-file
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#000ddd",
-  },
-})
+}
