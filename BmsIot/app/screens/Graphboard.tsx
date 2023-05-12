@@ -26,15 +26,23 @@ import { DemoTabScreenProps } from "../navigators/DemoNavigator"
 import { colors, spacing } from "../theme"
 
 const optionsMoisture: AxiosRequestConfig = {
+
   method: "GET",
-  url: "https://api.thingspeak.com/channels/1958878/fields/1.json",
-  params: { results: "1", api_key: "N2FJP53Q2OIEDX4M" },
+
+  url: "https://api.thingspeak.com/channels/2028980/fields/2.json",
+
+  params: { results: "1", api_key: "SO50RIFJSC1IIO7K" },
+
 }
 
 const optionsMoisture2: AxiosRequestConfig = {
+
   method: "GET",
-  url: "https://api.thingspeak.com/channels/1958878/fields/1.json",
-  params: { results: "15", api_key: "N2FJP53Q2OIEDX4M" },
+
+  url: "https://api.thingspeak.com/channels/2028980/fields/2.json",
+
+  params: { results: "15", api_key: "SO50RIFJSC1IIO7K" },
+
 }
 
 export const Graphboard: FC<DemoTabScreenProps<"Graphboard">> = function Graphboard(_props) {
@@ -122,12 +130,12 @@ export const Graphboard: FC<DemoTabScreenProps<"Graphboard">> = function Graphbo
   }, [])
 
   useEffect(() => {
-    fetch("https://api.thingspeak.com/channels/1958878/fields/1.json?results=5")
+    fetch("https://api.thingspeak.com/channels/2028980/fields/2.json?results=5")
       .then((response) => response.json())
       .then((jsonData) => {
         const newData = jsonData.feeds.map((feed) => ({
           created_at: convertUTCToISTTime(feed.created_at),
-          field2: parseInt(feed.field1),
+          field2: parseInt(feed.field2),
         }))
         setThingData(newData)
       })
