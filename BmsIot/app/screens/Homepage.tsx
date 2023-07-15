@@ -32,19 +32,19 @@ import Svg, { Use, Image } from "react-native-svg"
 
 const optionsMoisture: AxiosRequestConfig = {
   method: "GET",
-  url: "https://api.thingspeak.com/channels/1958878/fields/1.json",
-  params: { results: "1", api_key: "N2FJP53Q2OIEDX4M" },
+  url: "https://api.thingspeak.com/channels/2028980/fields/2.json",
+  params: { results: "1", api_key: "SO50RIFJSC1IIO7K" },
 }
 
 const optionsValve: AxiosRequestConfig = {
   method: "GET",
-  url: "https://api.thingspeak.com/channels/2019443/feeds.json",
-  params: { results: "1", api_key: "WN5QXB4RPALKRT0I" },
+  url: "https://api.thingspeak.com/channels/2028983/feeds.json",
+  params: { results: "1", api_key: "SO50RIFJSC1IIO7K" },
 }
 
 const optionsUbidotsON: AxiosRequestConfig = {
   method: "POST",
-  url: "https://industrial.api.ubidots.com/api/v1.6/variables/6407c7bcf2b635000cf91391/values/",
+  url: "https://industrial.api.ubidots.com/api/v1.6/variables/639179fb72ec12000c900fb2/values/",
   headers: {
     "content-type": "application/json",
     "X-Auth-Token": "BBFF-LtAIEbHEpPlRavdXFOC9Nu8SRnTN9y",
@@ -54,7 +54,7 @@ const optionsUbidotsON: AxiosRequestConfig = {
 
 const optionsUbidotsOFF: AxiosRequestConfig = {
   method: "POST",
-  url: "https://industrial.api.ubidots.com/api/v1.6/variables/6407c7bcf2b635000cf91391/values/",
+  url: "https://industrial.api.ubidots.com/api/v1.6/variables/639179fb72ec12000c900fb2/values/",
   headers: {
     "content-type": "application/json",
     "X-Auth-Token": "BBFF-LtAIEbHEpPlRavdXFOC9Nu8SRnTN9y",
@@ -90,10 +90,10 @@ export const HomePage: React.FC = () => {
       .request(optionsMoisture)
       .then(function (response) {
         setMoistureLastUpdated(convertUTCToIST(response.data.feeds[0].created_at))
-        setMoistureLevelMV(response.data.feeds[0].field1)
-        setMoistureLevel(convertMVtoPercentage(response.data.feeds[0].field1))
-        setPercent(convertMVtoPercentage(response.data.feeds[0].field1))
-        setData(getData(convertMVtoPercentage(response.data.feeds[0].field1)))
+        setMoistureLevelMV(response.data.feeds[0].field2)
+        setMoistureLevel(convertMVtoPercentage(response.data.feeds[0].field2))
+        setPercent(convertMVtoPercentage(response.data.feeds[0].field2))
+        setData(getData(convertMVtoPercentage(response.data.feeds[0].field2)))
       })
       .catch(function (error) {
         console.error(error)
@@ -154,8 +154,8 @@ export const HomePage: React.FC = () => {
   // * functions
   // function to convert mV to percentage
   const convertMVtoPercentage = (mV: number): number => {
-    let in_min = 3000
-    let in_max = 1000
+    let in_min = 4000
+    let in_max = 2000
     let out_min = 0
     let out_max = 100
     let percentage = ((mV - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min
