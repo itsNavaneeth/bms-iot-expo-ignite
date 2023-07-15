@@ -328,97 +328,94 @@ const WaterPage: React.FC = () => {
   return (
     <>
       <Screen preset="scroll" safeAreaEdges={["top"]} contentContainerStyle={$container}>
-        
-      <View style={$title}>
+        <View style={$title}>
           <Text preset="heading" text="Water Center" />
           <Text preset="subheading" text="Control your water estimates" />
         </View>
         {/* buttons UI */}
         <View style={$bgm}>
-        
-        <Text
-
-          size="lg"
-          weight="bold"
-          text="Update Water Needed"
-          style={$whiteText}
-        />
-        <TextField
-          style={{}}
-          placeholder="useless placeholder"
-          keyboardType="numeric"
-          onChangeText={setThingspeakNumber}
-          value={thingspeakNumber}
-        />
-        <Button
-          style={{
-            flex: 1,
-            backgroundColor: colors.palette.secondary600,
-            borderColor:colors.palette.secondary600,
-            marginBottom: spacing.large,
-            marginTop: spacing.medium,
-          }}
-          onPress={updateGCP}
-        >
-          Update Thingspeak Field 5
-        </Button>
+          <Text size="lg" weight="bold" text="Update Water Needed" style={$whiteText} />
+          <TextField
+            style={{}}
+            placeholder="useless placeholder"
+            keyboardType="numeric"
+            onChangeText={setThingspeakNumber}
+            value={thingspeakNumber}
+          />
+          <Button
+            style={{
+              flex: 1,
+              backgroundColor: colors.palette.secondary600,
+              borderColor: colors.palette.secondary600,
+              marginBottom: spacing.large,
+              marginTop: spacing.medium,
+            }}
+            onPress={updateGCP}
+          >
+            Update Thingspeak Field 5
+          </Button>
         </View>
 
         <View style={$bgm}>
-        {/* card 6 - Water Used Today */}
-        <Card
-          onPress={todayWaterAPI}
-          style={$item}
-          verticalAlignment="space-between"
-          HeadingComponent={
-            <>
-              <Text style={$metadataText} size="xxs" weight="semiBold" text={valveLastUpdated} />
-            </>
-          }
-          ContentComponent={<Text size="lg" weight="bold" text="Water Used Today (Ltr)" />}
-          RightComponent={
-            <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
-              <Text style={$metadataText} size="xxs" weight="semiBold" />
-              <Text style={$righttext} size="xl" weight="bold" text={`${todayWater}`} />
-            </View>
-          }
-        />
+          {/* card 6 - Water Used Today */}
+          <Card
+            onPress={todayWaterAPI}
+            style={$item}
+            verticalAlignment="space-between"
+            HeadingComponent={
+              <>
+                <Text style={$metadataText} size="xxs" weight="semiBold" text={valveLastUpdated} />
+              </>
+            }
+            ContentComponent={<Text size="lg" weight="bold" text="Water Used Today (Ltr)" />}
+            RightComponent={
+              <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
+                <Text style={$metadataText} size="xxs" weight="semiBold" />
+                <Text style={$righttext} size="xl" weight="bold" text={`${todayWater}`} />
+              </View>
+            }
+          />
 
-        {/* card 7 - Valve Position */}
-        <Card
-          style={$item}
-          verticalAlignment="space-between"
-          HeadingComponent={
-            <>
-              <Text style={$metadataText} size="xxs" weight="semiBold" text={valveLastUpdated} />
-            </>
-          }
-          ContentComponent={<Text size="lg" weight="bold" text="Valve Position" />}
-          RightComponent={
-            <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
-              <Text style={$metadataText} size="xxs" weight="semiBold" text={`${valvePosNumber}`} />
-              <Text style={$righttext} size="xl" weight="bold" text={`${valvePosition}`} />
-            </View>
-          }
-        />
+          {/* card 7 - Valve Position */}
+          <Card
+            style={$item}
+            verticalAlignment="space-between"
+            HeadingComponent={
+              <>
+                <Text style={$metadataText} size="xxs" weight="semiBold" text={valveLastUpdated} />
+              </>
+            }
+            ContentComponent={<Text size="lg" weight="bold" text="Valve Position" />}
+            RightComponent={
+              <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
+                <Text
+                  style={$metadataText}
+                  size="xxs"
+                  weight="semiBold"
+                  text={`${valvePosNumber}`}
+                />
+                <Text style={$righttext} size="xl" weight="bold" text={`${valvePosition}`} />
+              </View>
+            }
+          />
 
-        {/* card 2  - water requirement */}
-        <Card
-          style={$item}
-          verticalAlignment="space-between"
-          HeadingComponent={
-            <>
-              <Text style={$metadataText} size="xxs" weight="semiBold" text={gcpLastUpdated} />
-            </>
-          }
-          ContentComponent={<Text size="lg" weight="bold" text="Water Requirement" />}
-          RightComponent={
-            <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
-              <Text style={$metadataText} size="xxs" weight="semiBold" />
-              <Text style={$righttext} size="xl" weight="bold" text={`${field5} L`} />
-            </View>
-          }
-        />
+          {/* card 2  - water requirement */}
+          <Card
+            style={$item}
+            verticalAlignment="space-between"
+            HeadingComponent={
+              <>
+                <Text style={$metadataText} size="xxs" weight="semiBold" text={gcpLastUpdated} />
+              </>
+            }
+            ContentComponent={<Text size="lg" weight="bold" text="Water Requirement" />}
+            RightComponent={
+              <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
+                <Text style={$metadataText} size="xxs" weight="semiBold" />
+                <Text style={$righttext} size="xl" weight="bold" text={`${field5} L`} />
+              </View>
+            }
+          />
         </View>
       </Screen>
     </>
@@ -432,23 +429,17 @@ const $bgm: ViewStyle = {
   marginTop: spacing.small,
 }
 
-
-
-
 const $righttext: TextStyle = {
   // color: colors.textDim,
 }
 // end of my css
 
-
-
 const $container: ViewStyle = {
-  height:"100%",
+  height: "100%",
   paddingTop: spacing.large + spacing.extraLarge,
   paddingHorizontal: spacing.large,
-  backgroundColor:colors.palette.accent200
+  backgroundColor: colors.palette.accent200,
 }
-
 
 // my css
 
@@ -456,16 +447,12 @@ const $title: ViewStyle = {
   marginBottom: spacing.medium,
 }
 
-
-
-
 const $item: ViewStyle = {
   // padding: spacing.medium,
   marginTop: spacing.medium,
   minHeight: 100,
-  backgroundColor: colors.palette.accent100
+  backgroundColor: colors.palette.accent100,
 }
-
 
 const $metadataText: TextStyle = {
   color: colors.textDim,
@@ -474,8 +461,6 @@ const $metadataText: TextStyle = {
 
 const $whiteText: TextStyle = {
   color: "white",
-
 }
-
 
 export default WaterPage

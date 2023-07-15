@@ -5,30 +5,22 @@ import { TextStyle, ViewStyle } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { Icon } from "../components"
 import { translate } from "../i18n"
-import { Graphboard, DemoShowroomScreen } from "../screens"
+import { Graphboard } from "../screens"
 import { colors, spacing, typography } from "../theme"
 import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
 import InfoPage from "../screens/InfoPage"
-import { HomePage} from "../screens/Homepage"
+import { HomePage } from "../screens/Homepage"
 import WaterPage from "../screens/WaterPage"
 import { Profile } from "../screens/Profile"
 
 export type DemoTabParamList = {
   Graphboard: undefined
-  DemoShowroom: { queryIndex?: string; itemIndex?: string }
-  DemoDebug: undefined
-  DemoPodcastList: undefined
   HomePage: undefined
   InfoPage: undefined
   WaterPage: undefined
-  Profile:undefined
+  Profile: undefined
 }
 
-/**
- * Helper for automatically generating navigation prop types for each route.
- *
- * More info: https://reactnavigation.org/docs/typescript/#organizing-types
- */
 export type DemoTabScreenProps<T extends keyof DemoTabParamList> = CompositeScreenProps<
   BottomTabScreenProps<DemoTabParamList, T>,
   AppStackScreenProps<keyof AppStackParamList>
@@ -94,7 +86,7 @@ export function DemoNavigator() {
           ),
         }}
       />
-<Tab.Screen
+      <Tab.Screen
         name="Profile"
         component={Profile}
         options={{
@@ -104,40 +96,6 @@ export function DemoNavigator() {
           ),
         }}
       />
-
-
-      {/* <Tab.Screen
-        name="DemoShowroom"
-        component={DemoShowroomScreen}
-        options={{
-          tabBarLabel: translate("demoNavigator.componentsTab"),
-          tabBarIcon: ({ focused }) => (
-            <Icon icon="settings" color={focused && colors.tint} size={30} />
-          ),
-        }}
-      /> */}
-
-      {/* <Tab.Screen
-        name="DemoPodcastList"
-        component={DemoPodcastListScreen}
-        options={{
-          tabBarLabel: translate("demoNavigator.podcastListTab"),
-          tabBarIcon: ({ focused }) => (
-            <Icon icon="components" color={focused && colors.tint} size={30} />
-          ),
-        }}
-      /> */}
-
-      {/* <Tab.Screen
-        name="DemoDebug"
-        component={DemoDebugScreen}
-        options={{
-          tabBarLabel: translate("demoNavigator.debugTab"),
-          tabBarIcon: ({ focused }) => (
-            <Icon icon="components" color={focused && colors.tint} size={30} />
-          ),
-        }}
-      /> */}
     </Tab.Navigator>
   )
 }
@@ -157,5 +115,3 @@ const $tabBarLabel: TextStyle = {
   lineHeight: 16,
   flex: 1,
 }
-
-// @demo remove-file

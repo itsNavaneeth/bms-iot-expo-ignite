@@ -1,70 +1,12 @@
-import { Link, RouteProp, useRoute } from "@react-navigation/native"
-import React, { FC, ReactElement, useEffect, useRef, useState } from "react"
-import axios, { AxiosRequestConfig } from "axios"
-import { colors, typography } from "../theme"
-import {
-  FlatList,
-  ImageStyle,
-  Platform,
-  SectionList,
-  TextStyle,
-  View,
-  ViewStyle,
-} from "react-native"
-import { DrawerLayout } from "react-native-gesture-handler"
-import { useSharedValue } from "react-native-reanimated"
-import { Button, Card, ListItem, Screen, Text } from "../components"
-import { isRTL } from "../i18n"
-import { DemoTabParamList, DemoTabScreenProps } from "../navigators/DemoNavigator"
-import { spacing } from "../theme"
-import * as Demos from "./DemoShowroomScreen/demos"
-import {
-  VictoryAnimation,
-  VictoryBar,
-  VictoryChart,
-  VictoryContainer,
-  VictoryLabel,
-  VictoryPie,
-  VictoryTheme,
-} from "victory-native"
-// import { Defs } from "react-native-svg"
-import Svg, { Use, Image } from "react-native-svg"
-
-const optionsMoisture: AxiosRequestConfig = {
-  method: "GET",
-  url: "https://api.thingspeak.com/channels/1958878/fields/1.json",
-  params: { results: "1", api_key: "N2FJP53Q2OIEDX4M" },
-}
-
-const optionsValve: AxiosRequestConfig = {
-  method: "GET",
-  url: "https://api.thingspeak.com/channels/2019443/feeds.json",
-  params: { results: "1", api_key: "WN5QXB4RPALKRT0I" },
-}
-
-const optionsUbidotsON: AxiosRequestConfig = {
-  method: "POST",
-  url: "https://industrial.api.ubidots.com/api/v1.6/variables/6407c7bcf2b635000cf91391/values/",
-  headers: {
-    "content-type": "application/json",
-    "X-Auth-Token": "BBFF-LtAIEbHEpPlRavdXFOC9Nu8SRnTN9y",
-  },
-  data: { value: 0 },
-}
-
-const optionsUbidotsOFF: AxiosRequestConfig = {
-  method: "POST",
-  url: "https://industrial.api.ubidots.com/api/v1.6/variables/6407c7bcf2b635000cf91391/values/",
-  headers: {
-    "content-type": "application/json",
-    "X-Auth-Token": "BBFF-LtAIEbHEpPlRavdXFOC9Nu8SRnTN9y",
-  },
-  data: { value: 1 },
-}
+import React, { useEffect, useRef, useState } from "react"
+import { TextStyle, View, ViewStyle } from "react-native"
+import { VictoryAnimation, VictoryLabel, VictoryPie } from "victory-native"
+import { Button, Card, Screen, Text } from "../components"
+import { colors, spacing } from "../theme"
+import Svg from "react-native-svg"
+import { fetchMoisture, turnOff, turnOn } from "../utils/constants"
 
 export const HomePage: React.FC = () => {
-  const timeout = useRef<ReturnType<typeof setTimeout>>()
-
   //   usestate
   const [percent, setPercent] = useState(25)
   const [data, setData] = useState([
@@ -75,62 +17,49 @@ export const HomePage: React.FC = () => {
   const [moistureLevelMV, setMoistureLevelMV] = useState(0.0)
   const [moistureLastUpdated, setMoistureLastUpdated] = useState("")
 
-  //   on off usestates
+  // on off usestates
   const [wateringStatus, setWateringStatus] = useState("OFF")
-  const [btnState, setBtnState] = useState("")
-  const [textState, setTextState] = useState("text-error")
 
   // current time
   const [dt, setDt] = useState(new Date().toLocaleString())
 
-  // * all axios statements
-  // axios for moisture level
-  const fetchMoisture = async () => {
-    axios
-      .request(optionsMoisture)
-      .then(function (response) {
-        setMoistureLastUpdated(convertUTCToIST(response.data.feeds[0].created_at))
-        setMoistureLevelMV(response.data.feeds[0].field1)
-        setMoistureLevel(convertMVtoPercentage(response.data.feeds[0].field1))
-        setPercent(convertMVtoPercentage(response.data.feeds[0].field1))
-        setData(getData(convertMVtoPercentage(response.data.feeds[0].field1)))
-      })
-      .catch(function (error) {
-        console.error(error)
-      })
+  // * all handler functions
+  const handleTurnOn = async () => {
+    try {
+      const { wateringStatus } = await turnOn()
+      setWateringStatus(wateringStatus)
+    } catch (error) {
+      console.error(error)
+    }
   }
 
-  //   axios ubidots ON
-  const turnOn = async () => {
-    axios
-      .request(optionsUbidotsON)
-      .then(function (response) {
-        setWateringStatus("ON")
-        setTextState("text-success")
-      })
-      .catch(function (error) {
-        console.error(error)
-      })
+  const handleTurnOff = async () => {
+    try {
+      const { wateringStatus } = await turnOff()
+      setWateringStatus(wateringStatus)
+    } catch (error) {
+      console.error(error)
+    }
   }
 
-  //   axios ubidots OFF
-  const turnOff = async () => {
-    axios
-      .request(optionsUbidotsOFF)
-      .then(function (response) {
-        setWateringStatus("OFF")
-        setTextState("text-error")
-      })
-      .catch(function (error) {
-        console.error(error)
-      })
+  const handleFetchMoisture = async () => {
+    try {
+      const { moistureLastUpdated, moistureLevelMV, moistureLevel, percent, data } =
+        await fetchMoisture()
+      setMoistureLastUpdated(moistureLastUpdated)
+      setMoistureLevelMV(moistureLevelMV)
+      setMoistureLevel(moistureLevel)
+      setPercent(percent)
+      setData(data)
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   // * use effect 2 sec
   useEffect(() => {
-    // let percent = 25
     const setStateInterval = setInterval(() => {
-      fetchMoisture()
+      handleFetchMoisture()
     }, 2000)
     return () => clearInterval(setStateInterval)
   }, [])
@@ -144,53 +73,6 @@ export const HomePage: React.FC = () => {
     return () => clearInterval(secTimer)
   }, [])
 
-  const getData = (percent: number) => {
-    return [
-      { x: 1, y: percent },
-      { x: 2, y: 100 - percent },
-    ]
-  }
-
-  // * functions
-  // function to convert mV to percentage
-  const convertMVtoPercentage = (mV: number): number => {
-    let in_min = 3000
-    let in_max = 1000
-    let out_min = 0
-    let out_max = 100
-    let percentage = ((mV - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min
-
-    // helper code to ensure percentage isnt > 100 or < 0
-    if (percentage > 100) {
-      percentage = 100
-    } else if (percentage < 0) {
-      percentage = 0
-    }
-
-    return Number(percentage.toFixed(2))
-  }
-
-  // function to convert UTC to IST
-  const convertUTCToIST = (utcDate: string): string => {
-    const date = new Date(utcDate)
-    const istDate = new Date(date.getTime())
-
-    const year = istDate.getFullYear()
-    const month = formatDoubleDigit(istDate.getMonth() + 1) // Add 1 to account for zero-based indexing
-    const day = formatDoubleDigit(istDate.getDate())
-    const hours = formatDoubleDigit(istDate.getHours())
-    const minutes = formatDoubleDigit(istDate.getMinutes())
-    const seconds = formatDoubleDigit(istDate.getSeconds())
-
-    const istTime = `${hours}:${minutes}:${seconds} | ${day}/${month}/${year}`
-
-    return istTime
-  }
-  // helper function for double digit date parsing
-  const formatDoubleDigit = (value: number) => {
-    return value < 10 ? `0${value}` : value.toString()
-  }
-
   return (
     <Screen preset="fixed" safeAreaEdges={["top"]} contentContainerStyle={$screenContainer}>
       <View
@@ -199,7 +81,6 @@ export const HomePage: React.FC = () => {
           justifyContent: "space-between",
         }}
       >
-
         <View style={$title}>
           <Text preset="heading" text="Welcome back!" />
           <Text preset="subheading" text="Here are some current stats" />
@@ -213,11 +94,16 @@ export const HomePage: React.FC = () => {
         />
 
         {/* graph */}
-        
-        <Svg viewBox="0 0 400 400" width="100%" height="30%" style={{
-              backgroundColor: colors.palette.accent200,              
-              borderRadius: 20
-            }}>
+
+        <Svg
+          viewBox="0 0 400 400"
+          width="100%"
+          height="30%"
+          style={{
+            backgroundColor: colors.palette.accent200,
+            borderRadius: 20,
+          }}
+        >
           <VictoryPie
             standalone={false}
             animate={{ duration: 1000 }}
@@ -255,7 +141,7 @@ export const HomePage: React.FC = () => {
             )}
           </VictoryAnimation>
         </Svg>
-        
+
         <View>
           {/* card 1  - moisture level */}
           <Card
@@ -295,14 +181,22 @@ export const HomePage: React.FC = () => {
               backgroundColor: colors.palette.accent200,
               marginVertical: spacing.large,
               padding: "5%",
-              borderRadius: 10
+              borderRadius: 10,
             }}
           >
-            <View style={{display:"flex",justifyContent:"center",flexDirection:"column", alignItems:"center",  marginBottom:"4%"}}>
-            <Text preset="formLabel" text="Valve Control" />
-            <Text preset="formHelper" text={`Watering system is now ${wateringStatus}`} />
+            <View
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                flexDirection: "column",
+                alignItems: "center",
+                marginBottom: "4%",
+              }}
+            >
+              <Text preset="formLabel" text="Valve Control" />
+              <Text preset="formHelper" text={`Watering system is now ${wateringStatus}`} />
             </View>
-            
+
             <View
               style={{
                 display: "flex",
@@ -317,7 +211,7 @@ export const HomePage: React.FC = () => {
                   marginRight: spacing.small,
                   backgroundColor: colors.palette.secondary400,
                 }}
-                onPress={turnOn}
+                onPress={handleTurnOn}
               >
                 On
               </Button>
@@ -327,15 +221,12 @@ export const HomePage: React.FC = () => {
                   marginLeft: spacing.small,
                   backgroundColor: colors.palette.angry200,
                 }}
-                onPress={turnOff}
+                onPress={handleTurnOff}
               >
                 Off
               </Button>
             </View>
           </View>
-
-
-
         </View>
       </View>
     </Screen>
@@ -343,11 +234,10 @@ export const HomePage: React.FC = () => {
 }
 
 const $metadataText: TextStyle = {
-  justifyContent:"center",
-  alignItems:"center",  
+  justifyContent: "center",
+  alignItems: "center",
   marginEnd: spacing.medium,
   marginBottom: spacing.extraSmall,
-
 }
 
 const $item: ViewStyle = {
@@ -356,45 +246,15 @@ const $item: ViewStyle = {
   marginTop: "3%",
   borderColor: colors.palette.accent200,
   backgroundColor: colors.palette.accent200,
-
-}
-
-const $center: ViewStyle = {
-  width: "100%",
-  minHeight: 100,
-  justifyContent: "center",
-  marginTop: "3%",
-  borderColor: colors.palette.accent200,
-  backgroundColor: colors.palette.accent200,
-
-}
-
-
-const $boxy: ViewStyle = {
-  width: "100%",
-  minHeight: 100,
-  backgroundColor: colors.palette.accent200,
-  borderRadius:10
-
-}
-
-// const $whiten: TextStyle = {
-//   color: "white"
-// }
-
-const $status: TextStyle = {
-  marginTop: "5%"
 }
 
 const $screenContainer: ViewStyle = {
   height: "100%",
   paddingTop: "10%",
   paddingHorizontal: spacing.large,
-  backgroundColor: colors.palette.accent400
+  backgroundColor: colors.palette.accent400,
 }
 
 const $title: TextStyle = {
   marginBottom: spacing.huge,
 }
-
-
