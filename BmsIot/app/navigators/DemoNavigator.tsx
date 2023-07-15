@@ -9,7 +9,7 @@ import { Graphboard, DemoShowroomScreen } from "../screens"
 import { colors, spacing, typography } from "../theme"
 import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
 import InfoPage from "../screens/InfoPage"
-import { HomePage } from "../screens/HomePage"
+import { HomePage} from "../screens/Homepage"
 import WaterPage from "../screens/WaterPage"
 import { Profile } from "../screens/Profile"
 
@@ -21,7 +21,7 @@ export type DemoTabParamList = {
   HomePage: undefined
   InfoPage: undefined
   WaterPage: undefined
-  Profile: undefined
+  Profile:undefined
 }
 
 /**
@@ -94,7 +94,7 @@ export function DemoNavigator() {
           ),
         }}
       />
-      <Tab.Screen
+<Tab.Screen
         name="Profile"
         component={Profile}
         options={{
@@ -104,6 +104,7 @@ export function DemoNavigator() {
           ),
         }}
       />
+
 
       {/* <Tab.Screen
         name="DemoShowroom"

@@ -17,14 +17,14 @@ const ICON_SIZE = 14
 
 const optionsMoisture: AxiosRequestConfig = {
   method: "GET",
-  url: "https://api.thingspeak.com/channels/2028980/fields/2.json",
-  params: { results: "1", api_key: "SO50RIFJSC1IIO7K" },
+  url: "https://api.thingspeak.com/channels/1958878/fields/1.json",
+  params: { results: "1", api_key: "N2FJP53Q2OIEDX4M" },
 }
 
 const optionsValve: AxiosRequestConfig = {
   method: "GET",
-  url: "https://api.thingspeak.com/channels/2028983/feeds.json",
-  params: { results: "1", api_key: "SO50RIFJSC1IIO7K" },
+  url: "https://api.thingspeak.com/channels/2019443/feeds.json",
+  params: { results: "1", api_key: "WN5QXB4RPALKRT0I" },
 }
 const optionsOpenWeather: AxiosRequestConfig = {
   method: "GET",
@@ -72,8 +72,8 @@ const InfoPage: React.FC = () => {
       .request(optionsMoisture)
       .then(function (response) {
         setMoistureLastUpdated(convertUTCToIST(response.data.feeds[0].created_at))
-        setMoistureLevelMV(response.data.feeds[0].field2)
-        setMoistureLevel(convertMVtoPercentage(response.data.feeds[0].field2))
+        setMoistureLevelMV(response.data.feeds[0].field1)
+        setMoistureLevel(convertMVtoPercentage(response.data.feeds[0].field1))
       })
       .catch(function (error) {
         console.error(error)
@@ -187,8 +187,8 @@ const InfoPage: React.FC = () => {
   // * all functions
   // function to convert mV to percentage
   const convertMVtoPercentage = (mV: number): number => {
-    let in_min = 4000
-    let in_max = 2000
+    let in_min = 3000
+    let in_max = 1000
     let out_min = 0
     let out_max = 100
     let percentage = ((mV - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min
@@ -237,125 +237,126 @@ const InfoPage: React.FC = () => {
   return (
     <>
       <Screen preset="scroll" safeAreaEdges={["top"]} contentContainerStyle={$container}>
+
+
         <View style={$title}>
           <Text preset="heading" text="Data Center" />
           <Text preset="subheading" text="View some useful metrics" />
         </View>
 
+
+
+
         <View style={$bgm}>
           <Text preset="formLabel" text="Hydrological Factors" style={$whiteText} />
+          
+        <Card
+          style={$item}
+          verticalAlignment="space-between"
+          HeadingComponent={
+            <>
+              <Text style={$metadataText} size="xxs" weight="semiBold" text={moistureLastUpdated} />
+            </>
+          }
+          ContentComponent={<Text size="lg" weight="bold" text="Moisture Level" />}
+          RightComponent={
+            <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
+              <Text
+                style={$metadataText}
+                size="xxs"
+                weight="semiBold"
+                text={`${moistureLevelMV} mV`}
+              />
+              <Text style={$righttext} size="xxl" weight="bold" text={`${moistureLevel} %`} />
+            </View>
+          }
+        />
 
-          <Card
-            style={$item}
-            verticalAlignment="space-between"
-            HeadingComponent={
-              <>
-                <Text
-                  style={$metadataText}
-                  size="xxs"
-                  weight="semiBold"
-                  text={moistureLastUpdated}
-                />
-              </>
-            }
-            ContentComponent={<Text size="lg" weight="bold" text="Moisture Level" />}
-            RightComponent={
-              <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
-                <Text
-                  style={$metadataText}
-                  size="xxs"
-                  weight="semiBold"
-                  text={`${moistureLevelMV} mV`}
-                />
-                <Text style={$righttext} size="xxl" weight="bold" text={`${moistureLevel} %`} />
-              </View>
-            }
-          />
 
-          {/* card 6 - Total Water Used */}
-          <Card
-            style={$item}
-            verticalAlignment="space-between"
-            HeadingComponent={
-              <>
-                <Text style={$metadataText} size="xxs" weight="semiBold" text={valveLastUpdated} />
-              </>
-            }
-            ContentComponent={<Text size="lg" weight="bold" text="Total Water Used (Ltr)" />}
-            RightComponent={
-              <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
-                <Text style={$metadataText} size="xxs" weight="semiBold" />
-                <Text style={$righttext} size="xxl" weight="bold" text={`${totalWaterUsed}`} />
-              </View>
-            }
-          />
 
-          {/* card 2  - water requirement */}
-          <Card
-            style={$item}
-            verticalAlignment="space-between"
-            HeadingComponent={
-              <>
-                <Text style={$metadataText} size="xxs" weight="semiBold" text={gcpLastUpdated} />
-              </>
-            }
-            ContentComponent={<Text size="lg" weight="bold" text="Water Requirement" />}
-            RightComponent={
-              <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
-                <Text style={$metadataText} size="xxs" weight="semiBold" />
-                <Text style={$righttext} size="xxl" weight="bold" text={`255 L`} />
-              </View>
-            }
-          />
+        {/* card 6 - Total Water Used */}
+        <Card
+          style={$item}
+          verticalAlignment="space-between"
+          HeadingComponent={
+            <>
+              <Text style={$metadataText} size="xxs" weight="semiBold" text={valveLastUpdated} />
+            </>
+          }
+          ContentComponent={<Text size="lg" weight="bold" text="Total Water Used (Ltr)" />}
+          RightComponent={
+            <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
+              <Text style={$metadataText} size="xxs" weight="semiBold" />
+              <Text style={$righttext} size="xxl" weight="bold" text={`${totalWaterUsed}`} />
+            </View>
+          }
+        />
+
+        {/* card 2  - water requirement */}
+        <Card
+          style={$item}
+          verticalAlignment="space-between"
+          HeadingComponent={
+            <>
+              <Text style={$metadataText} size="xxs" weight="semiBold" text={gcpLastUpdated} />
+            </>
+          }
+          ContentComponent={<Text size="lg" weight="bold" text="Water Requirement" />}
+          RightComponent={
+            <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
+              <Text style={$metadataText} size="xxs" weight="semiBold" />
+              <Text style={$righttext} size="xxl" weight="bold" text={`255 L`} />
+            </View>
+          }
+        />
+
+
         </View>
 
         <View style={$bgm}>
           <Text preset="formLabel" text="Valve Status" style={$whiteText} />
+          
+        {/* card 5 - Real Time Flow Rate */}
+        <Card
+          style={$item}
+          verticalAlignment="space-between"
+          HeadingComponent={
+            <>
+              <Text style={$metadataText} size="xxs" weight="semiBold" text={valveLastUpdated} />
+            </>
+          }
+          ContentComponent={<Text size="lg" weight="bold" text="Current Flow Rate (L/min)" />}
+          RightComponent={
+            <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
+              <Text style={$metadataText} size="xxs" weight="semiBold" />
+              <Text
+                style={$righttext}
+                size="xxl"
+                weight="bold"
+                text={`${realTimeFlowRate} L/min`}
+              />
+            </View>
+          }
+        />
+        {/* card 7 - Valve Position */}
+        <Card
+          style={$item}
+          verticalAlignment="space-between"
+          HeadingComponent={
+            <>
+              <Text style={$metadataText} size="xxs" weight="semiBold" text={valveLastUpdated} />
+            </>
+          }
+          ContentComponent={<Text size="lg" weight="bold" text="Valve Position" />}
+          RightComponent={
+            <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
+              <Text style={$metadataText} size="xxs" weight="semiBold" text={`${valvePosNumber}`} />
+              <Text style={$righttext} size="xxl" weight="bold" text={`${valvePosition}`} />
+            </View>
+          }
+        />
 
-          {/* card 5 - Real Time Flow Rate */}
-          <Card
-            style={$item}
-            verticalAlignment="space-between"
-            HeadingComponent={
-              <>
-                <Text style={$metadataText} size="xxs" weight="semiBold" text={valveLastUpdated} />
-              </>
-            }
-            ContentComponent={<Text size="lg" weight="bold" text="Current Flow Rate (L/min)" />}
-            RightComponent={
-              <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
-                <Text style={$metadataText} size="xxs" weight="semiBold" />
-                <Text
-                  style={$righttext}
-                  size="xxl"
-                  weight="bold"
-                  text={`${realTimeFlowRate} L/min`}
-                />
-              </View>
-            }
-          />
-          {/* card 7 - Valve Position */}
-          <Card
-            style={$item}
-            verticalAlignment="space-between"
-            HeadingComponent={
-              <>
-                <Text style={$metadataText} size="xxs" weight="semiBold" text={valveLastUpdated} />
-              </>
-            }
-            ContentComponent={<Text size="lg" weight="bold" text="Valve Position" />}
-            RightComponent={
-              <View style={{ flex: 1, justifyContent: "space-between", alignItems: "flex-end" }}>
-                <Text
-                  style={$metadataText}
-                  size="xxs"
-                  weight="semiBold"
-                  text={`${valvePosNumber}`}
-                />
-                <Text style={$righttext} size="xxl" weight="bold" text={`${valvePosition}`} />
-              </View>
-            }
-          />
+
         </View>
         <View style={$bgm}>
           <Text preset="formLabel" text="Environmental Factors" style={$whiteText} />
@@ -518,22 +519,25 @@ const $righttext: TextStyle = {
 const $container: ViewStyle = {
   paddingTop: spacing.large + spacing.extraLarge,
   paddingHorizontal: spacing.large,
-  backgroundColor: colors.palette.accent200,
+  backgroundColor:colors.palette.accent200
 }
 
 const $title: TextStyle = {
-  //
+  // 
 }
+
 
 const $item: ViewStyle = {
   // padding: spacing.medium,
   marginTop: spacing.medium,
   minHeight: 100,
-  backgroundColor: colors.palette.accent100,
+  backgroundColor: colors.palette.accent100
 }
+
 
 const $whiteText: TextStyle = {
   color: "white",
+
 }
 
 const $metadataText: TextStyle = {
@@ -549,5 +553,9 @@ const $bgm: ViewStyle = {
   borderRadius: 10,
   marginTop: spacing.huge,
 }
+
+
+
+
 
 export default InfoPage

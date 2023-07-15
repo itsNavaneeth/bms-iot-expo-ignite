@@ -26,15 +26,23 @@ import { DemoTabScreenProps } from "../navigators/DemoNavigator"
 import { colors, spacing } from "../theme"
 
 const optionsMoisture: AxiosRequestConfig = {
+
   method: "GET",
+
   url: "https://api.thingspeak.com/channels/2028980/fields/2.json",
+
   params: { results: "1", api_key: "SO50RIFJSC1IIO7K" },
+
 }
 
 const optionsMoisture2: AxiosRequestConfig = {
+
   method: "GET",
+
   url: "https://api.thingspeak.com/channels/2028980/fields/2.json",
+
   params: { results: "15", api_key: "SO50RIFJSC1IIO7K" },
+
 }
 
 export const Graphboard: FC<DemoTabScreenProps<"Graphboard">> = function Graphboard(_props) {
@@ -52,9 +60,9 @@ export const Graphboard: FC<DemoTabScreenProps<"Graphboard">> = function Graphbo
     axios
       .request(optionsMoisture2)
       .then((response) => {
-        const newData = response.data.feeds.map((feed: { created_at: string; field2: string }) => ({
+        const newData = response.data.feeds.map((feed: { created_at: string; field1: string }) => ({
           created_at: convertUTCToISTTime(feed.created_at),
-          field2: parseInt(feed.field2),
+          field2: parseInt(feed.field1),
         }))
         setThingData(newData)
       })
@@ -67,8 +75,8 @@ export const Graphboard: FC<DemoTabScreenProps<"Graphboard">> = function Graphbo
       .request(optionsMoisture)
       .then(function (response) {
         setMoistureLastUpdated(convertUTCToIST(response.data.feeds[0].created_at))
-        setMoistureLevelMV(response.data.feeds[0].field2)
-        setMoistureLevel(convertMVtoPercentage(response.data.feeds[0].field2))
+        setMoistureLevelMV(response.data.feeds[0].field1)
+        setMoistureLevel(convertMVtoPercentage(response.data.feeds[0].field1))
       })
       .catch(function (error) {
         console.error(error)
@@ -78,8 +86,8 @@ export const Graphboard: FC<DemoTabScreenProps<"Graphboard">> = function Graphbo
   // * all functions
   // function to convert mV to percentage
   const convertMVtoPercentage = (mV: number): number => {
-    let in_min = 4000
-    let in_max = 2000
+    let in_min = 3000
+    let in_max = 1000
     let out_min = 0
     let out_max = 100
     let percentage = ((mV - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min
@@ -167,7 +175,7 @@ export const Graphboard: FC<DemoTabScreenProps<"Graphboard">> = function Graphbo
 
   // const { width } = Dimensions.get("screen")
   const { height, width, scale, fontScale } = useWindowDimensions()
-  const parentWidth = Dimensions.get("window").width * 1
+  const parentWidth = Dimensions.get("window").width * 0.85
   const parentHeight = Dimensions.get("window").height * 0.35
 
   const [selectedPoint, setSelectedPoint] = useState(null)
@@ -179,17 +187,17 @@ export const Graphboard: FC<DemoTabScreenProps<"Graphboard">> = function Graphbo
   return (
     <Screen preset="fixed" contentContainerStyle={$container} safeAreaEdges={["top"]}>
       <View style={$title}>
-        <Text preset="heading" text="Graphboard" />
-        <Text preset="subheading" text="Visualize your data in various graphs" />
-      </View>
+            <Text  preset="heading" text="Graphboard" />
+            <Text preset="subheading" text="Visualize your data in various graphs" />
+            </View>
       <View style={$topContainer1}>
-        <Text preset="formLabel" text="Live Voltage Reading Graph" />
+      <Text  preset="formLabel" text="Live Voltage Reading Graph" />
         {/* graph */}
         <VictoryChart
           width={parentWidth}
           height={parentHeight}
           theme={VictoryTheme.material}
-          domain={{ y: [0, 3000] }}
+          domain={{ y: [500, 3000] }}
         >
           <VictoryLine
             style={{ data: { stroke: "green", strokeWidth: 5 } }}
@@ -234,10 +242,11 @@ export const Graphboard: FC<DemoTabScreenProps<"Graphboard">> = function Graphbo
   )
 }
 
+
 const $topContainer1: ViewStyle = {
-  backgroundColor: colors.palette.accent100,
-  borderRadius: 10,
-  paddingLeft: "1%",
+    backgroundColor:colors.palette.accent100,
+    borderRadius:10,
+  paddingLeft:"1%",
   alignItems: "center",
   flex: 1,
   justifyContent: "center",
@@ -251,11 +260,13 @@ const $topContainer2: ViewStyle = {
 }
 
 const $container: ViewStyle = {
-  backgroundColor: colors.palette.accent200,
+    backgroundColor:colors.palette.accent200,
   paddingHorizontal: spacing.large,
   height: "100%",
-  paddingTop: "10%",
+  paddingTop:"10%"
 }
+
+
 
 const $bgm: ViewStyle = {
   borderColor: colors.palette.accent100,
@@ -265,10 +276,15 @@ const $bgm: ViewStyle = {
   marginTop: spacing.small,
 }
 
+
+
+
 const $righttext: TextStyle = {
   // color: colors.textDim,
 }
 // end of my css
+
+
 
 // const $container: ViewStyle = {
 //   height:"100%",
@@ -277,18 +293,23 @@ const $righttext: TextStyle = {
 
 // }
 
+
 // my css
 
 const $title: ViewStyle = {
   marginBottom: spacing.medium,
 }
 
+
+
+
 const $item: ViewStyle = {
   // padding: spacing.medium,
   marginTop: spacing.medium,
   minHeight: 100,
-  backgroundColor: colors.palette.accent100,
+  backgroundColor: colors.palette.accent100
 }
+
 
 const $metadataText: TextStyle = {
   color: colors.textDim,
@@ -297,4 +318,5 @@ const $metadataText: TextStyle = {
 
 const $whiteText: TextStyle = {
   color: "white",
+
 }
