@@ -6,18 +6,18 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { Icon } from "../components"
 import { translate } from "../i18n"
 import { Graphboard } from "../screens"
+import { HomePage } from "../screens/Homepage"
+import InfoPage from "../screens/InfoPage"
+import { Profile } from "../screens/Profile"
+import WaterPage from "../screens/WaterPage"
 import { colors, spacing, typography } from "../theme"
 import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
-import InfoPage from "../screens/InfoPage"
-import { HomePage } from "../screens/Homepage"
-import WaterPage from "../screens/WaterPage"
-import { Profile } from "../screens/Profile"
 
 export type DemoTabParamList = {
-  Graphboard: undefined
   HomePage: undefined
   InfoPage: undefined
   WaterPage: undefined
+  Graphboard: undefined
   Profile: undefined
 }
 
