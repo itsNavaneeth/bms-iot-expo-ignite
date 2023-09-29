@@ -4,10 +4,10 @@ import { VictoryAnimation, VictoryLabel, VictoryPie } from "victory-native"
 import { Button, Card, Screen, Text } from "../components"
 import { colors, spacing } from "../theme"
 import Svg from "react-native-svg"
-import { fetchMoisture, turnOff, turnOn } from "../utils/utils"
+import { fetchMoisture, turnOff, turnOn } from "../utils/constants"
 
 export const HomePage: React.FC = () => {
-  // usestate
+  //   usestate
   const [percent, setPercent] = useState(25)
   const [data, setData] = useState([
     { x: 1, y: 25 },
@@ -24,7 +24,6 @@ export const HomePage: React.FC = () => {
   const [dt, setDt] = useState(new Date().toLocaleString())
 
   // * all handler functions
-  // turning on the valve
   const handleTurnOn = async () => {
     try {
       const { wateringStatus } = await turnOn()
@@ -34,7 +33,6 @@ export const HomePage: React.FC = () => {
     }
   }
 
-  // turning off the valve
   const handleTurnOff = async () => {
     try {
       const { wateringStatus } = await turnOff()
@@ -44,7 +42,6 @@ export const HomePage: React.FC = () => {
     }
   }
 
-  // get the soil moisture value
   const handleFetchMoisture = async () => {
     try {
       const { moistureLastUpdated, moistureLevelMV, moistureLevel, percent, data } =
@@ -59,9 +56,7 @@ export const HomePage: React.FC = () => {
     }
   }
 
-  // * use effect 15 sec
-  // get the soil moisture value every 15 seconds
-  // thingspeak updates every 15 seconds so we also  update every 15 seconds
+  // * use effect 2 sec
   useEffect(() => {
     const setStateInterval = setInterval(() => {
       handleFetchMoisture()
@@ -70,7 +65,6 @@ export const HomePage: React.FC = () => {
   }, [])
 
   // * use effect for current time
-  // we update the current date and time every 1 second
   useEffect(() => {
     let secTimer = setInterval(() => {
       setDt(new Date().toLocaleString())
@@ -110,7 +104,6 @@ export const HomePage: React.FC = () => {
             borderRadius: 20,
           }}
         >
-          {/* // TODO: need to fix hardcoded colors */}
           <VictoryPie
             standalone={false}
             animate={{ duration: 1000 }}
@@ -124,12 +117,12 @@ export const HomePage: React.FC = () => {
               data: {
                 fill: ({ datum }) => {
                   let color = "green"
-                  if (datum.y < 70) {
-                    color = colors.palette.secondary400
+                  if (datum.y < 20) {
+                    color = colors.palette.angry200
                   } else {
-                    color = colors.palette.accent200
+                    color = colors.palette.secondary400
                   }
-                  return color
+                  return datum.x === 1 ? color : "transparent"
                 },
               },
             }}

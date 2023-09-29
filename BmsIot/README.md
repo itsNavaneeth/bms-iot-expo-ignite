@@ -1,4 +1,18 @@
-# Welcome to the BMS IoT App!
+# Welcome to your new ignited app!
+
+[![CircleCI](https://circleci.com/gh/infinitered/ignite.svg?style=svg)](https://circleci.com/gh/infinitered/ignite)
+
+## The latest and greatest boilerplate for Infinite Red opinions
+
+This is the boilerplate that [Infinite Red](https://infinite.red) uses as a way to test bleeding-edge changes to our React Native stack.
+
+Currently includes:
+
+- React Native
+- React Navigation
+- MobX State Tree
+- TypeScript
+- And more!
 
 ## Quick Start
 
@@ -100,79 +114,17 @@ This is a great place to put miscellaneous helpers and utilities. Things like da
 
 The `ignite` directory stores all things Ignite, including CLI and boilerplate items. Here you will find templates you can customize to help you get started with React Native.
 
----
+### ./test directory
 
-## demoNavigator.tsx
+This directory will hold your Jest configs and mocks.
 
-This is the Bottom Navbar Component for the application. It has navigation for `Homepage`, `InfoPage`, `WaterPage`, `Graphboard` and `ProfilePage`.
-You can modify or add additional pages if needed.
-Ensure that the pages are mentioned in the `DemoTabParamList` and other places where required. (Any errors will point out where the pages should be mentioned)
+## Running Detox end-to-end tests
 
----
+Read [Detox setup instructions](./detox/README.md).
 
-## Homepage.tsx
+## Previous Boilerplates
 
-This is the main Landing page for the application. Code is explained within the file
-It displays the:
+- [2018 aka Bowser](https://github.com/infinitered/ignite-bowser)
+- [2017 aka Andross](https://github.com/infinitered/ignite-andross)
+- [2016 aka Ignite 1.0](https://github.com/infinitered/ignite-ir-boilerplate-2016)
 
-- Current date and time
-- Circular graph for the current moisture level of the soil
-- A card for the current moisture level of the soil along with the milliVolts from the sensor.
-- The timestamp at which the sensor has sent the values.
-- On and Off buttons for controlling the solenoid valve (to release water)
-
----
-
-## Infopage.tsx
-
-This page provides information on the various values received from the sensors. Code is explained within the file
-It is divided into three sections:
-
-- ### Hydrological Factors:
-
-  - Current moisture level (% and mV)
-  - Total water used (Ltr)
-  - Water requirement for today (Ltr)
-
-- ### Valve Status:
-
-  - Current water flow rate (Ltr/min)
-  - Valve position (Open or Closed)
-
-- ### Environmental Factors:
-  - Temperature (Celsius)
-  - Rainfall (Hardcoded value for the time being)
-  - Humidity (Number)
-- Note: Temperature and Humidity values are from the OpenWeather API. To prevent infinite rendering and causing a large bill amount, you need to touch the icon every single time you want to view the updated temperature and humidity. (P.S. Don't touch the icon more than a couple of times in a day 😅)
-
----
-
-## Infopage.tsx
-
-This page is used to view the water estimate provided by Google Cloud Platform (GCP) and modify the water estimate (override) if needed.
-
-- Text field to override the water to be released for the current day along with a button to submit that value.
-- Total water used today.
-- Valve position (Open or Closed)
-- Water requirement for the current day provided by GCP or the value provided(overrided) by us from the text field above.
-
----
-
-## Graphboard.tsx (file is disabled currently since its causing some bugs)
-
-This page is used to view real time graph for the soil moisture data.
-
-- Graph which displays the real time soil moisture values.
-- A card which displays the current soil moisture value(% and mV) along with the timestamp at which the value was received.
-
----
-
-## Profile.tsx
-
-This is the profile page for the user which gives details about the crop.
-
-- Crop Name
-- Variety
-- Harvest Period
-- Soil Type
-- Expected Harvest Date
